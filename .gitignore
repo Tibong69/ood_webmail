@@ -22,3 +22,19 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Maven / Gradle
+target/
+*.log
+
+# OS에서 자동으로 생기는 파일들
+.DS_Store        # macOS
+Thumbs.db        # Windows

@@ -68,7 +68,7 @@ public class SystemController {
     }
 
     @RequestMapping(value = "/login.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public String loginDo(@RequestParam Integer menu) {
+    public String loginDo(@RequestParam Integer menu, RedirectAttributes redirect) {
         String url = "";
         log.debug("로그인 처리: menu = {}", menu);
         switch (menu) {
@@ -99,6 +99,7 @@ public class SystemController {
                 } else {
                     // RequestDispatcher view = request.getRequestDispatcher("login_fail.jsp");
                     // view.forward(request, response);
+                    redirect.addAttribute("userid", userid);
                     url = "redirect:/login_fail";
                 }
                 break;

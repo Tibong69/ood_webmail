@@ -6,6 +6,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="deu.cse.spring_webmail.control.CommandType" %>
 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 
 <html>
@@ -37,13 +39,13 @@
                         UserAdminAgent agent = new UserAdminAgent("localhost", 4555, cwd);
             --%>
             <form name="DeleteUser" action="delete_user.do" method="POST">
-                <%
-                    for (String userId : (java.util.List<String>) request.getAttribute("userList")) {
-                        out.print("<label><input type=checkbox name=\"selectedUsers\" "
-                            + "value=\"" + userId + "\" />");
-                        out.println(userId + "</lable> <br>");
-                    }
-                %>
+                <c:forEach items="${userList}" var="user">
+                    <label>
+                        <input type="checkbox" name ="selectUsers" value= "${user}"> 
+                        <span>${user}</span>
+                    </label>
+                    <br>
+                </c:forEach>
                 <br>
                 <input type="submit" value="제거" name="delete_command" 
                        onClick ="return getConfirmResult()"/>

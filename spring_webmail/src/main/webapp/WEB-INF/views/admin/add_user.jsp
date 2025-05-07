@@ -8,7 +8,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang = "ko" xml:lang="ko">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>사용자 추가 화면</title>
@@ -26,12 +26,19 @@
 
             <form name="AddUser" action="add_user.do" method="POST">
                 <table border="0" align="left">
+                    <thead>
+                        <tr>
+                            <th scope="col">항목</th>
+                            <th scope="col">입력값</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <tr>
-                        <td>사용자 ID</td>
+                        <th scope="row">사용자 ID</th>
                         <td> <input type="text" name="id" value="" size="20" />  </td>
                     </tr>
                     <tr>
-                        <td>암호 </td>
+                        <th scope="row">암호</th>
                         <td> <input type="password" name="password" value="" /> </td>
                     </tr>
                     <tr>
@@ -40,8 +47,8 @@
                             <input type="reset" value="초기화" name="reset" />
                         </td>
                     </tr>
+                    </tbody>
                 </table>
-
             </form>
         </div>
 

@@ -10,7 +10,7 @@
 <%-- @taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core" --%>
 
 
-<html>
+<html lang="ko" xml:lang="ko">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>메일 쓰기 화면</title>
@@ -28,7 +28,7 @@
             <form enctype="multipart/form-data" method="POST" action="write_mail.do" >
                 <table>
                     <tr>
-                        <td> 수신 </td>
+                        <th scope="row">수신</th>
                         <td> <input type="text" name="to" size="80"
                                     value="${!empty param['sender'] ? param['sender'] : ''}"
             <!--    value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>  -->

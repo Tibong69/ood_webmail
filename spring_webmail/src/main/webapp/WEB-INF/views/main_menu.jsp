@@ -20,7 +20,7 @@
 %>
 -->
 
-<html>
+<html lang="ko" xml:lang="ko">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>주메뉴 화면</title>

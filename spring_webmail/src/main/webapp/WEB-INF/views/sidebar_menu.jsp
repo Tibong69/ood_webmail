@@ -8,7 +8,7 @@
 <%@page import="deu.cse.spring_webmail.control.CommandType"%>
 
 <!DOCTYPE html>
-<html>
+<html lang="ko" xml:lang="ko">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>웹메일 시스템 메뉴</title>

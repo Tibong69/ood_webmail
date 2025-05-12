@@ -60,21 +60,21 @@ public class UserAdminAgent {
     }
 
     public boolean addUser(String userId, String password) {
-       try {
-        // addUser 메소드 호출
-        mbsc.invoke(
-                userRepositoryMBean,
-                "addUser", // jconsole에서 확인한 operation 이름
-                new Object[]{userId, password},
-                new String[]{"java.lang.String", "java.lang.String"}
-        );
+        try {
+            // addUser 메소드 호출
+            mbsc.invoke(
+                    userRepositoryMBean,
+                    "addUser", // jconsole에서 확인한 operation 이름
+                    new Object[]{userId, password},
+                    new String[]{"java.lang.String", "java.lang.String"}
+            );
 
-        log.debug("사용자 {} 추가 성공", userId);
-        return true;  // 예외 없이 실행되면 성공
-    } catch (Exception e) {
-        log.debug("addUser 실패: {}", e.getMessage());
-        return false;  // 예외가 발생하면 실패
-    }
+            log.debug("사용자 {} 추가 성공", userId);
+            return true;  // 예외 없이 실행되면 성공
+        } catch (Exception e) {
+            log.debug("addUser 실패: {}", e.getMessage());
+            return false;  // 예외가 발생하면 실패
+        }
     }
 
     public List<String> getUserList() {
@@ -87,7 +87,6 @@ public class UserAdminAgent {
             log.debug("listAllUsers 반환 값: {}", result);
 
             // 반환된 결과가 Set<String>이라면 그 데이터를 List로 변환
-            
             if (result instanceof String[]) {
                 String[] userArray = (String[]) result;
                 log.debug("ADMIN_ID = {}", ADMIN_ID);
@@ -150,4 +149,21 @@ public class UserAdminAgent {
             return false;
         }
     }
+
+    public boolean setPassword(String userId, String newPassword) {
+        try {
+            mbsc.invoke(
+                    userRepositoryMBean,
+                    "setPassword",
+                    new Object[]{userId, newPassword},
+                    new String[]{"java.lang.String", "java.lang.String"}
+            );
+            log.info("비밀번호 변경 성공: {}", userId);
+            return true;
+        } catch (Exception e) {
+            log.error("setPassword 실패: {}", e.getMessage());
+            return false;
+        }
+    }
+
 }

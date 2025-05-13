@@ -57,25 +57,30 @@ public class SystemController {
     private Integer JAMES_CONTROL_PORT;
     @Value("${james.host}")
     private String JAMES_HOST;
+    
+    //To Request Parameters
+    private String HOST = "HOST";
+    private String USER_ID = "userid";
+    private String PASSWORD = "password";
 
     @GetMapping("/")
     public String index() {
         log.debug("index() called...");
-        session.setAttribute("host", JAMES_HOST);
+        session.setAttribute(HOST, JAMES_HOST);
         session.setAttribute("debug", "false");
 
         return "/index";
     }
 
     @RequestMapping(value = "/login.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public String loginDo(@RequestParam Integer menu) {
+    public String loginDo(@RequestParam Integer menu, RedirectAttributes redirect) {
         String url = "";
         log.debug("로그인 처리: menu = {}", menu);
         switch (menu) {
             case CommandType.LOGIN:
-                String host = (String) request.getSession().getAttribute("host");
-                String userid = request.getParameter("userid");
-                String password = request.getParameter("passwd");
+                String host = (String) request.getSession().getAttribute(HOST);
+                String userid = request.getParameter(USER_ID);
+                String password = request.getParameter(PASSWORD);
 
                 // Check the login information is valid using <<model>>Pop3Agent.
                 Pop3Agent pop3Agent = new Pop3Agent(host, userid, password);
@@ -85,13 +90,13 @@ public class SystemController {
                 if (isLoginSuccess) {
                     if (isAdmin(userid)) {
                         // HttpSession 객체에 userid를 등록해 둔다.
-                        session.setAttribute("userid", userid);
+                        session.setAttribute(USER_ID, userid);
                         // response.sendRedirect("admin_menu.jsp");
                         url = "redirect:/admin_menu";
                     } else {
                         // HttpSession 객체에 userid와 password를 등록해 둔다.
-                        session.setAttribute("userid", userid);
-                        session.setAttribute("password", password);
+                        session.setAttribute(USER_ID, userid);
+                        session.setAttribute(PASSWORD, password);
                         // response.sendRedirect("main_menu.jsp");
                         url = "redirect:/main_menu";  // URL이 http://localhost:8080/webmail/main_menu 이와 같이 됨.
                         // url = "/main_menu";  // URL이 http://localhost:8080/webmail/login.do?menu=91 이와 같이 되어 안 좋음
@@ -99,6 +104,7 @@ public class SystemController {
                 } else {
                     // RequestDispatcher view = request.getRequestDispatcher("login_fail.jsp");
                     // view.forward(request, response);
+                    redirect.addAttribute(USER_ID, userid);
                     url = "redirect:/login_fail";
                 }
                 break;
@@ -130,9 +136,9 @@ public class SystemController {
     @GetMapping("/main_menu")
     public String mainMenu(Model model) {
         Pop3Agent pop3 = new Pop3Agent();
-        pop3.setHost((String) session.getAttribute("host"));
-        pop3.setUserid((String) session.getAttribute("userid"));
-        pop3.setPassword((String) session.getAttribute("password"));
+        pop3.setHost((String) session.getAttribute(HOST));
+        pop3.setUserid((String) session.getAttribute(USER_ID));
+        pop3.setPassword((String) session.getAttribute(PASSWORD));
 
         String messageList = pop3.getMessageList();
         model.addAttribute("messageList", messageList);
@@ -226,9 +232,9 @@ public class SystemController {
 
     /**
      * https://34codefactory.wordpress.com/2019/06/16/how-to-display-image-in-jsp-using-spring-code-factory/
-     * 
+     *
      * @param imageName
-     * @return 
+     * @return
      */
     @RequestMapping(value = "/get_image/{imageName}")
     @ResponseBody
@@ -248,7 +254,7 @@ public class SystemController {
         byte[] imageInByte;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
-            bufferedImage = ImageIO.read(new File(folderPath + File.separator + imageName) );
+            bufferedImage = ImageIO.read(new File(folderPath + File.separator + imageName));
             String format = imageName.substring(imageName.lastIndexOf(".") + 1);
             ImageIO.write(bufferedImage, format, byteArrayOutputStream);
             byteArrayOutputStream.flush();
@@ -263,4 +269,55 @@ public class SystemController {
         return null;
     }
 
+    @PostMapping("/change_password")
+    public String changePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            RedirectAttributes attrs) {
+
+        String userid = (String) session.getAttribute("userid");
+
+        // 1. 현재 비밀번호 검증
+        Pop3Agent pop3 = new Pop3Agent(
+                (String) session.getAttribute("host"),
+                userid,
+                currentPassword
+        );
+        if (!pop3.validate()) {
+            attrs.addFlashAttribute("msg", "현재 비밀번호가 일치하지 않습니다.");
+            return "redirect:/change_password";
+        }
+
+        // 2. 새 비밀번호 일치 확인
+        if (!newPassword.equals(confirmPassword)) {
+            attrs.addFlashAttribute("msg", "새 비밀번호와 확인이 일치하지 않습니다.");
+            return "redirect:/change_password";
+        }
+
+        // 3. JMX를 통해 비밀번호 변경
+        try {
+            UserAdminAgent agent = new UserAdminAgent(
+                    JAMES_HOST, JAMES_CONTROL_PORT,
+                    ctx.getRealPath("."),
+                    ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR
+            );
+            if (agent.setPassword(userid, newPassword)) {
+                session.setAttribute("password", newPassword); // 세션 업데이트
+                attrs.addFlashAttribute("msg", "비밀번호가 성공적으로 변경되었습니다.");
+            } else {
+                attrs.addFlashAttribute("msg", "비밀번호 변경에 실패했습니다.");
+            }
+        } catch (Exception ex) {
+            log.error("비밀번호 변경 오류: {}", ex.getMessage());
+            attrs.addFlashAttribute("msg", "시스템 오류가 발생했습니다.");
+        }
+
+        return "redirect:/change_password";
+    }
+
+    @GetMapping("/change_password")
+    public String changePasswordForm() {
+        return "change_password";
+    }
 }

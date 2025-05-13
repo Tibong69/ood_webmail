@@ -232,9 +232,9 @@ public class SystemController {
 
     /**
      * https://34codefactory.wordpress.com/2019/06/16/how-to-display-image-in-jsp-using-spring-code-factory/
-     * 
+     *
      * @param imageName
-     * @return 
+     * @return
      */
     @RequestMapping(value = "/get_image/{imageName}")
     @ResponseBody
@@ -254,7 +254,7 @@ public class SystemController {
         byte[] imageInByte;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
-            bufferedImage = ImageIO.read(new File(folderPath + File.separator + imageName) );
+            bufferedImage = ImageIO.read(new File(folderPath + File.separator + imageName));
             String format = imageName.substring(imageName.lastIndexOf(".") + 1);
             ImageIO.write(bufferedImage, format, byteArrayOutputStream);
             byteArrayOutputStream.flush();
@@ -269,4 +269,55 @@ public class SystemController {
         return null;
     }
 
+    @PostMapping("/change_password")
+    public String changePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            RedirectAttributes attrs) {
+
+        String userid = (String) session.getAttribute("userid");
+
+        // 1. 현재 비밀번호 검증
+        Pop3Agent pop3 = new Pop3Agent(
+                (String) session.getAttribute("host"),
+                userid,
+                currentPassword
+        );
+        if (!pop3.validate()) {
+            attrs.addFlashAttribute("msg", "현재 비밀번호가 일치하지 않습니다.");
+            return "redirect:/change_password";
+        }
+
+        // 2. 새 비밀번호 일치 확인
+        if (!newPassword.equals(confirmPassword)) {
+            attrs.addFlashAttribute("msg", "새 비밀번호와 확인이 일치하지 않습니다.");
+            return "redirect:/change_password";
+        }
+
+        // 3. JMX를 통해 비밀번호 변경
+        try {
+            UserAdminAgent agent = new UserAdminAgent(
+                    JAMES_HOST, JAMES_CONTROL_PORT,
+                    ctx.getRealPath("."),
+                    ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR
+            );
+            if (agent.setPassword(userid, newPassword)) {
+                session.setAttribute("password", newPassword); // 세션 업데이트
+                attrs.addFlashAttribute("msg", "비밀번호가 성공적으로 변경되었습니다.");
+            } else {
+                attrs.addFlashAttribute("msg", "비밀번호 변경에 실패했습니다.");
+            }
+        } catch (Exception ex) {
+            log.error("비밀번호 변경 오류: {}", ex.getMessage());
+            attrs.addFlashAttribute("msg", "시스템 오류가 발생했습니다.");
+        }
+
+        return "redirect:/change_password";
+    }
+
+    @GetMapping("/change_password")
+    public String changePasswordForm() {
+        return "change_password";
+    }
 }

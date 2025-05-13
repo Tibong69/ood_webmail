@@ -57,11 +57,16 @@ public class SystemController {
     private Integer JAMES_CONTROL_PORT;
     @Value("${james.host}")
     private String JAMES_HOST;
+    
+    //To Request Parameters
+    private String HOST = "HOST";
+    private String USER_ID = "userid";
+    private String PASSWORD = "password";
 
     @GetMapping("/")
     public String index() {
         log.debug("index() called...");
-        session.setAttribute("host", JAMES_HOST);
+        session.setAttribute(HOST, JAMES_HOST);
         session.setAttribute("debug", "false");
 
         return "/index";
@@ -73,9 +78,9 @@ public class SystemController {
         log.debug("로그인 처리: menu = {}", menu);
         switch (menu) {
             case CommandType.LOGIN:
-                String host = (String) request.getSession().getAttribute("host");
-                String userid = request.getParameter("userid");
-                String password = request.getParameter("passwd");
+                String host = (String) request.getSession().getAttribute(HOST);
+                String userid = request.getParameter(USER_ID);
+                String password = request.getParameter(PASSWORD);
 
                 // Check the login information is valid using <<model>>Pop3Agent.
                 Pop3Agent pop3Agent = new Pop3Agent(host, userid, password);
@@ -85,13 +90,13 @@ public class SystemController {
                 if (isLoginSuccess) {
                     if (isAdmin(userid)) {
                         // HttpSession 객체에 userid를 등록해 둔다.
-                        session.setAttribute("userid", userid);
+                        session.setAttribute(USER_ID, userid);
                         // response.sendRedirect("admin_menu.jsp");
                         url = "redirect:/admin_menu";
                     } else {
                         // HttpSession 객체에 userid와 password를 등록해 둔다.
-                        session.setAttribute("userid", userid);
-                        session.setAttribute("password", password);
+                        session.setAttribute(USER_ID, userid);
+                        session.setAttribute(PASSWORD, password);
                         // response.sendRedirect("main_menu.jsp");
                         url = "redirect:/main_menu";  // URL이 http://localhost:8080/webmail/main_menu 이와 같이 됨.
                         // url = "/main_menu";  // URL이 http://localhost:8080/webmail/login.do?menu=91 이와 같이 되어 안 좋음
@@ -99,7 +104,7 @@ public class SystemController {
                 } else {
                     // RequestDispatcher view = request.getRequestDispatcher("login_fail.jsp");
                     // view.forward(request, response);
-                    redirect.addAttribute("userid", userid);
+                    redirect.addAttribute(USER_ID, userid);
                     url = "redirect:/login_fail";
                 }
                 break;
@@ -131,9 +136,9 @@ public class SystemController {
     @GetMapping("/main_menu")
     public String mainMenu(Model model) {
         Pop3Agent pop3 = new Pop3Agent();
-        pop3.setHost((String) session.getAttribute("host"));
-        pop3.setUserid((String) session.getAttribute("userid"));
-        pop3.setPassword((String) session.getAttribute("password"));
+        pop3.setHost((String) session.getAttribute(HOST));
+        pop3.setUserid((String) session.getAttribute(USER_ID));
+        pop3.setPassword((String) session.getAttribute(PASSWORD));
 
         String messageList = pop3.getMessageList();
         model.addAttribute("messageList", messageList);

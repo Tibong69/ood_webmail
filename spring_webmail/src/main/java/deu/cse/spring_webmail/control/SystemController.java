@@ -59,9 +59,15 @@ public class SystemController {
     private String JAMES_HOST;
     
     //To Request Parameters
-    private String HOST = "HOST";
+    private String HOST = "host";
     private String USER_ID = "userid";
-    private String PASSWORD = "password";
+    private String PASSWORD = "passwd";
+    
+    //Redirect
+    private String REDIRECT = "redirect:/";
+    private String ADMIN_MAIN_MENUE = "admin_menu";
+    private String MAIN_MENU = "main_menu";
+    private String CHANGE_PASSWORD = "change_passwords";
 
     @GetMapping("/")
     public String index() {
@@ -92,25 +98,25 @@ public class SystemController {
                         // HttpSession 객체에 userid를 등록해 둔다.
                         session.setAttribute(USER_ID, userid);
                         // response.sendRedirect("admin_menu.jsp");
-                        url = "redirect:/admin_menu";
+                        url = REDIRECT + ADMIN_MAIN_MENUE;
                     } else {
                         // HttpSession 객체에 userid와 password를 등록해 둔다.
                         session.setAttribute(USER_ID, userid);
                         session.setAttribute(PASSWORD, password);
                         // response.sendRedirect("main_menu.jsp");
-                        url = "redirect:/main_menu";  // URL이 http://localhost:8080/webmail/main_menu 이와 같이 됨.
+                        url = REDIRECT + MAIN_MENU;  // URL이 http://localhost:8080/webmail/main_menu 이와 같이 됨.
                         // url = "/main_menu";  // URL이 http://localhost:8080/webmail/login.do?menu=91 이와 같이 되어 안 좋음
                     }
                 } else {
                     // RequestDispatcher view = request.getRequestDispatcher("login_fail.jsp");
                     // view.forward(request, response);
                     redirect.addAttribute(USER_ID, userid);
-                    url = "redirect:/login_fail";
+                    url = REDIRECT + "login_fail";
                 }
                 break;
             case CommandType.LOGOUT:
                 session.invalidate();
-                url = "redirect:/";  // redirect: 반드시 넣어야만 컨텍스트 루트로 갈 수 있음
+                url = REDIRECT;  // redirect: 반드시 넣어야만 컨텍스트 루트로 갈 수 있음
                 break;
             default:
                 break;
@@ -142,7 +148,7 @@ public class SystemController {
 
         String messageList = pop3.getMessageList();
         model.addAttribute("messageList", messageList);
-        return "main_menu";
+        return MAIN_MENU;
     }
 
     @GetMapping("/admin_menu")
@@ -181,7 +187,7 @@ public class SystemController {
             log.error("add_user.do: 시스템 접속에 실패했습니다. 예외 = {}", ex.getMessage());
         }
 
-        return "redirect:/admin_menu";
+        return REDIRECT + ADMIN_MAIN_MENUE;
     }
 
     @GetMapping("/delete_user")
@@ -210,7 +216,7 @@ public class SystemController {
             log.error("delete_user.do : 예외 = {}", ex);
         }
 
-        return "redirect:/admin_menu";
+        return REDIRECT + ADMIN_MAIN_MENUE;
     }
 
     private List<String> getUserList() {
@@ -286,13 +292,13 @@ public class SystemController {
         );
         if (!pop3.validate()) {
             attrs.addFlashAttribute("msg", "현재 비밀번호가 일치하지 않습니다.");
-            return "redirect:/change_password";
+            return REDIRECT + CHANGE_PASSWORD;
         }
 
         // 2. 새 비밀번호 일치 확인
         if (!newPassword.equals(confirmPassword)) {
             attrs.addFlashAttribute("msg", "새 비밀번호와 확인이 일치하지 않습니다.");
-            return "redirect:/change_password";
+            return REDIRECT + CHANGE_PASSWORD;
         }
 
         // 3. JMX를 통해 비밀번호 변경
@@ -313,11 +319,11 @@ public class SystemController {
             attrs.addFlashAttribute("msg", "시스템 오류가 발생했습니다.");
         }
 
-        return "redirect:/change_password";
+        return REDIRECT + CHANGE_PASSWORD;
     }
 
     @GetMapping("/change_password")
     public String changePasswordForm() {
-        return "change_password";
+        return CHANGE_PASSWORD;
     }
 }

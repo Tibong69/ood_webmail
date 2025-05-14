@@ -27,7 +27,7 @@ public class MessageFormatter {
     @Getter private String body;
     
     //HTML Tag
-    String BR = "<br>";
+    String htmlBR = "<br>";
 
     public String getMessageTable(Message[] messages) {
         StringBuilder buffer = new StringBuilder();
@@ -75,20 +75,20 @@ public class MessageFormatter {
         subject = parser.getSubject();
         body = parser.getBody();
 
-        buffer.append("보낸 사람: " + parser.getFromAddress() + BR);
-        buffer.append("받은 사람: " + parser.getToAddress() + BR);
-        buffer.append("Cc &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : " + parser.getCcAddress() + BR);
-        buffer.append("보낸 날짜: " + parser.getSentDate() + BR);
-        buffer.append("제 &nbsp;&nbsp;&nbsp;  목: " + parser.getSubject() + BR + " <hr>");
+        buffer.append("보낸 사람: " + parser.getFromAddress() + htmlBR);
+        buffer.append("받은 사람: " + parser.getToAddress() + htmlBR);
+        buffer.append("Cc &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : " + parser.getCcAddress() + htmlBR);
+        buffer.append("보낸 날짜: " + parser.getSentDate() + htmlBR);
+        buffer.append("제 &nbsp;&nbsp;&nbsp;  목: " + parser.getSubject() + htmlBR + " <hr>");
 
         buffer.append(parser.getBody());
 
         String attachedFile = parser.getFileName();
         if (attachedFile != null) {
-            buffer.append(BR + " <hr> 첨부파일: <a href=download"
+            buffer.append(htmlBR + " <hr> 첨부파일: <a href=download"
                     + "?userid=" + this.userid
                     + "&filename=" + attachedFile.replaceAll(" ", "%20")
-                    + " target=_top> " + attachedFile + "</a> " + BR);
+                    + " target=_top> " + attachedFile + "</a> " + htmlBR);
         }
 
         return buffer.toString();

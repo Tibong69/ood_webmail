@@ -67,7 +67,7 @@ public class SystemController {
     private String redir = "redirect:/";
     private String adMainMenu = "admin_menu";
     private String mainMenu = "main_menu";
-    private String chpw = "change_passwords";
+    private String chpw = "change_password";
 
     @GetMapping("/")
     public String index() {

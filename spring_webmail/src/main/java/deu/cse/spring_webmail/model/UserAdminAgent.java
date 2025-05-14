@@ -25,6 +25,9 @@ public class UserAdminAgent {
     private MBeanServerConnection mbsc;
     private JMXConnector connector;
     private ObjectName userRepositoryMBean;
+    
+    //Java Package
+    String javaString = "java.lang.String";
 
     public UserAdminAgent() {
     }
@@ -66,7 +69,7 @@ public class UserAdminAgent {
                     userRepositoryMBean,
                     "addUser", // jconsole에서 확인한 operation 이름
                     new Object[]{userId, password},
-                    new String[]{"java.lang.String", "java.lang.String"}
+                    new String[]{javaString, javaString}
             );
 
             log.debug("사용자 {} 추가 성공", userId);
@@ -111,7 +114,7 @@ public class UserAdminAgent {
                         userRepositoryMBean,
                         "deleteUser",
                         new Object[]{userId},
-                        new String[]{"java.lang.String"}
+                        new String[]{javaString}
                 );
                 log.info("삭제됨: {}", userId);
             }
@@ -128,7 +131,7 @@ public class UserAdminAgent {
                     userRepositoryMBean,
                     "contains",
                     new Object[]{userId},
-                    new String[]{"java.lang.String"}
+                    new String[]{javaString}
             );
             return exists;
         } catch (Exception e) {
@@ -156,7 +159,7 @@ public class UserAdminAgent {
                     userRepositoryMBean,
                     "setPassword",
                     new Object[]{userId, newPassword},
-                    new String[]{"java.lang.String", "java.lang.String"}
+                    new String[]{javaString, javaString}
             );
             log.info("비밀번호 변경 성공: {}", userId);
             return true;

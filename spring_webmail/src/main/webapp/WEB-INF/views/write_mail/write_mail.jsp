@@ -48,13 +48,7 @@
                     </tr>
                     <tr>  <%-- TextArea    --%>
                         <td colspan="2">
-                            <textarea rows="15" name="body" cols="80">${!empty param['sender'] ?
-"
-
-
-
-----
-" += sessionScope['body'] : ''}</textarea> 
+                            <textarea rows="15" name="body" cols="80">${!empty param['sender'] ? "----" += sessionScope['body'] : ''}</textarea> 
                         </td>
                     </tr>
                     <tr>

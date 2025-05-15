@@ -24,7 +24,7 @@
             <form action="change_password" method="post">
                 <table>
                     <tr>
-                         <th colspan="2" style="text-align:center;">비밀번호 변경</th>
+                         <th id ="confirmPassword" colspan="2" style="text-align:center;">비밀번호 변경</th>
                     </tr>
                     <tr>
                         <td><label for="currentPassword">현재 비밀번호</label></td>

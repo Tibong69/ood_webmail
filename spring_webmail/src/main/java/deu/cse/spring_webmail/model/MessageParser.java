@@ -150,22 +150,6 @@ public class MessageParser {
         }
     }
 
-    private void printMessage(boolean printBody) {
-        System.out.println("From: " + fromAddress);
-        System.out.println("To: " + toAddress);
-        System.out.println("CC: " + ccAddress);
-        System.out.println("Date: " + sentDate);
-        System.out.println("Subject: " + subject);
-
-        if (printBody) {
-            System.out.println("본 문");
-            System.out.println("---------------------------------");
-            System.out.println(body);
-            System.out.println("---------------------------------");
-            System.out.println("첨부파일: " + fileName);
-        }
-    }
-
     private String getAddresses(Address[] addresses) {
         StringBuilder buffer = new StringBuilder();
 

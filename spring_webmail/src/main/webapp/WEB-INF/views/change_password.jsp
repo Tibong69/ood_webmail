@@ -21,9 +21,11 @@
         </div>
 
         <div id="main">
-            <h2>비밀번호 변경</h2>
             <form action="change_password" method="post">
                 <table>
+                    <tr>
+                         <th colspan="2" style="text-align:center;">비밀번호 변경</th>
+                    </tr>
                     <tr>
                         <td><label for="currentPassword">현재 비밀번호</label></td>
                         <td><input type="password" id="currentPassword" name="currentPassword" required></td>

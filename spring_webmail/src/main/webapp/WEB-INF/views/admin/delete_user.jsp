@@ -41,7 +41,7 @@
             <form name="DeleteUser" action="delete_user.do" method="POST">
                 <c:forEach items="${userList}" var="user">
                     <label>
-                        <input type="checkbox" name ="selectUsers" value= "${user}"> 
+                        <input type="checkbox" name ="selectedUsers" value= "${user}"> 
                         <span>${user}</span>
                     </label>
                     <br>

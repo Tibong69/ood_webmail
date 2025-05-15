@@ -150,6 +150,7 @@ public class Pop3Agent {
             return result;
     }
 
+   
     private boolean connectToStore() {
         boolean status = false;
         Properties props = System.getProperties();

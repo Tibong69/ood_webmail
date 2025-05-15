@@ -159,6 +159,6 @@ public class MessageParser {
         int start = buffer.length() - 2;
         int end = buffer.length() - 1;
         buffer.delete(start, end);
-        return buffer.toString();
+        return buffer.toString().trim();
     }
 }

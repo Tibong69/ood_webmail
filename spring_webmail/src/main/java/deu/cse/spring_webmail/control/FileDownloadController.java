@@ -30,16 +30,20 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author 박상현
  */
-
 @Controller
 @Slf4j
 public class FileDownloadController {
-    @Autowired
+
     private ServletContext ctx;
+
     @Value("${file.download_folder}")
-    private String DOWNLOAD_FOLDER;
-    
-     @GetMapping("/download")
+    private String downloadFolder;
+
+    public FileDownloadController(ServletContext ctx) {
+        this.ctx = ctx;
+    }
+
+    @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam("userid") String userId,
             @RequestParam("filename") String fileName) {
         log.debug("userid = {}, filename = {}", userId, fileName);
@@ -48,9 +52,9 @@ public class FileDownloadController {
         } catch (UnsupportedEncodingException ex) {
             log.error("error");
         }
-        
+
         // 1. 내려받기할 파일의 기본 경로 설정
-        String basePath = ctx.getRealPath(DOWNLOAD_FOLDER) + File.separator + userId;
+        String basePath = ctx.getRealPath(downloadFolder) + File.separator + userId;
 
         // 2. 파일의 Content-Type 찾기
         Path path = Paths.get(basePath + File.separator + fileName);
@@ -81,5 +85,5 @@ public class FileDownloadController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
-    
+
 }

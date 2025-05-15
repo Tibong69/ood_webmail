@@ -5,6 +5,7 @@
 package deu.cse.spring_webmail.control;
 
 import deu.cse.spring_webmail.model.Pop3Agent;
+import deu.cse.spring_webmail.model.Pop3Creator;
 import jakarta.mail.internet.MimeUtility;
 import java.io.File;
 import java.io.IOException;
@@ -43,15 +44,14 @@ public class ReadController {
     private HttpServletRequest request;
     @Value("${file.download_folder}")
     private String DOWNLOAD_FOLDER;
+    
+    Pop3Creator popCreator = new Pop3Creator();
 
     @GetMapping("/show_message")
     public String showMessage(@RequestParam Integer msgid, Model model) {
         log.debug("download_folder = {}", DOWNLOAD_FOLDER);
         
-        Pop3Agent pop3 = new Pop3Agent();
-        pop3.setHost((String) session.getAttribute("host"));
-        pop3.setUserid((String) session.getAttribute("userid"));
-        pop3.setPassword((String) session.getAttribute("password"));
+        Pop3Agent pop3 = popCreator.createPopAgent(session);
         pop3.setRequest(request);
         
         String msg = pop3.getMessage(msgid);
@@ -65,12 +65,8 @@ public class ReadController {
     @GetMapping("/delete_mail.do")
     public String deleteMailDo(@RequestParam("msgid") Integer msgId, RedirectAttributes attrs) {
         log.debug("delete_mail.do: msgid = {}", msgId);
+        Pop3Agent pop3 = popCreator.createPopAgent(session);
         
-        String host = (String) session.getAttribute("host");
-        String userid = (String) session.getAttribute("userid");
-        String password = (String) session.getAttribute("password");
-
-        Pop3Agent pop3 = new Pop3Agent(host, userid, password);
         boolean deleteSuccessful = pop3.deleteMessage(msgId, true);
         if (deleteSuccessful) {
             attrs.addFlashAttribute("msg", "메시지 삭제를 성공하였습니다.");

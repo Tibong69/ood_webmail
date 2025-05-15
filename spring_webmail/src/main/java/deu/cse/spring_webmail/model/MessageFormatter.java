@@ -6,6 +6,7 @@ package deu.cse.spring_webmail.model;
 
 import jakarta.mail.Message;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MessageFormatter {
-    @NonNull private String userid;  // 파일 임시 저장 디렉토리 생성에 필요
+
+    @NonNull
+    private String userid;  // 파일 임시 저장 디렉토리 생성에 필요
     private HttpServletRequest request = null;
-    
+
     // 220612 LJM - added to implement REPLY
-    @Getter private String sender;
-    @Getter private String subject;
-    @Getter private String body;
-    
+    @Getter
+    private String sender;
+    @Getter
+    private String subject;
+    @Getter
+    private String body;
+
     //HTML Tag
     String htmlBR = "<br>";
 
@@ -70,7 +76,7 @@ public class MessageFormatter {
         // MessageParser parser = new MessageParser(message, userid);
         MessageParser parser = new MessageParser(message, userid, request);
         parser.parse(true);
-        
+
         sender = parser.getFromAddress();
         subject = parser.getSubject();
         body = parser.getBody();
@@ -83,17 +89,20 @@ public class MessageFormatter {
 
         buffer.append(parser.getBody());
 
-        String attachedFile = parser.getFileName();
-        if (attachedFile != null) {
-            buffer.append(htmlBR + " <hr> 첨부파일: <a href=download"
-                    + "?userid=" + this.userid
-                    + "&filename=" + attachedFile.replaceAll(" ", "%20")
-                    + " target=_top> " + attachedFile + "</a> " + htmlBR);
+        List<String> attachedFiles = parser.getFileNames();
+        if (!attachedFiles.isEmpty()) {
+            buffer.append(htmlBR + " <hr> 첨부파일: ");
+            for (String fileName : attachedFiles) {
+                buffer.append("<a href=download"
+                        + "?userid=" + this.userid
+                        + "&filename=" + fileName.replaceAll(" ", "%20")
+                        + " target=_top> " + fileName + "</a> ");
+            }
+            buffer.append(htmlBR);
         }
-
         return buffer.toString();
     }
-    
+
     public void setRequest(HttpServletRequest request) {
         this.request = request;
     }

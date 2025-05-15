@@ -51,7 +51,7 @@ public class ReadController {
         Pop3Agent pop3 = new Pop3Agent();
         pop3.setHost((String) session.getAttribute("host"));
         pop3.setUserid((String) session.getAttribute("userid"));
-        pop3.setPassword((String) session.getAttribute("password"));
+        pop3.setPassword((String) session.getAttribute("passwd"));
         pop3.setRequest(request);
         
         String msg = pop3.getMessage(msgid);
@@ -68,7 +68,7 @@ public class ReadController {
         
         String host = (String) session.getAttribute("host");
         String userid = (String) session.getAttribute("userid");
-        String password = (String) session.getAttribute("password");
+        String password = (String) session.getAttribute("passwd");
 
         Pop3Agent pop3 = new Pop3Agent(host, userid, password);
         boolean deleteSuccessful = pop3.deleteMessage(msgId, true);

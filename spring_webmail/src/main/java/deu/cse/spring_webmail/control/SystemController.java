@@ -5,7 +5,7 @@
 package deu.cse.spring_webmail.control;
 
 import deu.cse.spring_webmail.model.Pop3Agent;
-import deu.cse.spring_webmail.model.Pop3Creator;
+import deu.cse.spring_webmail.creator.Pop3Creator;
 import deu.cse.spring_webmail.model.UserAdminAgent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;

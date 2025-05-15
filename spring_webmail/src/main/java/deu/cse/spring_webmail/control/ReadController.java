@@ -5,15 +5,7 @@
 package deu.cse.spring_webmail.control;
 
 import deu.cse.spring_webmail.model.Pop3Agent;
-import deu.cse.spring_webmail.model.Pop3Creator;
-import jakarta.mail.internet.MimeUtility;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import deu.cse.spring_webmail.creator.Pop3Creator;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

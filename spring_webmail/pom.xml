@@ -77,8 +77,20 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.12</version>
-        </dependency>             
+        </dependency>    
+        <!--Mockito 추가-->         
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.10.0</version> 
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+    
+    
+    
+
+    
 
     <build>
         <plugins>

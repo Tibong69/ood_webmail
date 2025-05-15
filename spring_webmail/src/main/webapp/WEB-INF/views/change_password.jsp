@@ -9,7 +9,7 @@
         <link type="text/css" rel="stylesheet" href="css/main_style.css" />
         <script>
             <c:if test="${!empty msg}">
-                alert("${msg}");
+            alert("${msg}");
             </c:if>
         </script>
     </head>
@@ -25,15 +25,15 @@
             <form action="change_password" method="post">
                 <table>
                     <tr>
-                        <td><label for="currentPassword">현재 비밀번호</label></td>
+                        <th scope="row"><label for="currentPassword">현재 비밀번호</label></th>
                         <td><input type="password" id="currentPassword" name="currentPassword" required></td>
                     </tr>
                     <tr>
-                        <td><label for="newPassword">새 비밀번호</label></td>
+                        <th scope="row"><label for="newPassword">새 비밀번호</label></th>
                         <td><input type="password" id="newPassword" name="newPassword" required></td>
                     </tr>
                     <tr>
-                        <td><label for="confirmPassword">새 비밀번호 확인</label></td>
+                        <th scope="row"><label for="confirmPassword">새 비밀번호 확인</label></th>
                         <td><input type="password" id="confirmPassword" name="confirmPassword" required></td>
                     </tr>
                     <tr>

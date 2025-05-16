@@ -5,6 +5,7 @@
 package deu.cse.spring_webmail.control;
 
 import deu.cse.spring_webmail.model.Pop3Agent;
+import deu.cse.spring_webmail.creator.Pop3Creator;
 import deu.cse.spring_webmail.model.UserAdminAgent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -68,6 +69,8 @@ public class SystemController {
     private String adMainMenu = "admin_menu";
     private String mainMenu = "main_menu";
     private String chpw = "change_password";
+    
+    private Pop3Creator popCreator = new Pop3Creator();
 
     @GetMapping("/")
     public String index() {
@@ -84,12 +87,14 @@ public class SystemController {
         log.debug("로그인 처리: menu = {}", menu);
         switch (menu) {
             case CommandType.LOGIN:
-                String host = (String) request.getSession().getAttribute(role);
                 String userid = request.getParameter(userID);
                 String password = request.getParameter(pw);
-
                 // Check the login information is valid using <<model>>Pop3Agent.
-                Pop3Agent pop3Agent = new Pop3Agent(host, userid, password);
+                Pop3Agent pop3Agent = popCreator.createPopAgent(
+                        (String) request.getSession().getAttribute(role), 
+                        userid,
+                        password);
+                
                 boolean isLoginSuccess = pop3Agent.validate();
 
                 // Now call the correct page according to its validation result.
@@ -141,11 +146,7 @@ public class SystemController {
 
     @GetMapping("/main_menu")
     public String mainMenu(Model model) {
-        Pop3Agent pop3 = new Pop3Agent();
-        pop3.setHost((String) session.getAttribute(role));
-        pop3.setUserid((String) session.getAttribute(userID));
-        pop3.setPassword((String) session.getAttribute(pw));
-
+        Pop3Agent pop3 = popCreator.createPopAgent(session);
         String messageList = pop3.getMessageList();
         model.addAttribute("messageList", messageList);
         return mainMenu;
@@ -285,7 +286,8 @@ public class SystemController {
         String userid = (String) session.getAttribute("userid");
 
         // 1. 현재 비밀번호 검증
-        Pop3Agent pop3 = new Pop3Agent(
+        
+        Pop3Agent pop3 = popCreator.createPopAgent(
                 (String) session.getAttribute("host"),
                 userid,
                 currentPassword

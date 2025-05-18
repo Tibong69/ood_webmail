@@ -37,7 +37,7 @@ public class MessageParser {
     @Getter @Setter private String sentDate;
     @Getter @Setter private String subject;
     @Getter @Setter private String body;
-    @Getter @Setter private String fileName;
+    @Getter @Setter private List<String> fileNames = new ArrayList<>();
     @Getter @Setter private String downloadTempDir = "C:/temp/download/";
 
     public MessageParser(Message message, String userid, HttpServletRequest request) {
@@ -104,8 +104,9 @@ public class MessageParser {
         
     //첨부 파일 처리
     private void processAttachment(Part p) throws Exception {
-        fileName = MimeUtility.decodeText(p.getFileName());
-        if (fileName != null) 
+        String filename = MimeUtility.decodeText(p.getFileName());
+        if (filename != null)
+            fileNames.add(filename);
             saveAttachment(p);
    }
     

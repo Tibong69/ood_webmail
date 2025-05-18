@@ -29,17 +29,40 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MessageParser {
-    @NonNull @Getter @Setter private Message message;
-    @NonNull @Getter @Setter private String userid;
-    @Getter @Setter private String toAddress;
-    @Getter @Setter private String fromAddress;
-    @Getter @Setter private String ccAddress;
-    @Getter @Setter private String sentDate;
-    @Getter @Setter private String subject;
-    @Getter @Setter private String body;
-    @Getter @Setter private List<String> fileNames = new ArrayList<>();
-    @Getter @Setter private String downloadTempDir = "C:/temp/download/";
-    
+
+    @NonNull
+    @Getter
+    @Setter
+    private Message message;
+    @NonNull
+    @Getter
+    @Setter
+    private String userid;
+    @Getter
+    @Setter
+    private String toAddress;
+    @Getter
+    @Setter
+    private String fromAddress;
+    @Getter
+    @Setter
+    private String ccAddress;
+    @Getter
+    @Setter
+    private String sentDate;
+    @Getter
+    @Setter
+    private String subject;
+    @Getter
+    @Setter
+    private String body;
+    @Getter
+    @Setter
+    private List<String> fileNames = new ArrayList<>();
+    @Getter
+    @Setter
+    private String downloadTempDir = "C:/temp/download/";
+
     public MessageParser(Message message, String userid, HttpServletRequest request) {
         this(message, userid);
         PropertyReader props = new PropertyReader();
@@ -65,7 +88,7 @@ public class MessageParser {
             status = true;
         } catch (Exception ex) {
             log.error("MessageParser.parse() - Exception : {}", ex.getMessage());
-            status = false;           
+            status = false;
         }
         return status;
     }
@@ -87,52 +110,65 @@ public class MessageParser {
     // ref: http://www.oracle.com/technetwork/java/faq-135477.html#readattach
     private void getPart(Part p) throws Exception {
         String disp = p.getDisposition();
+        if (isAttachment(disp)) {
+            processAttachment(p);
+        } else {
+            processTextMessage(p);
+        }
+    }
 
-        if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT)
-                || disp.equalsIgnoreCase(Part.INLINE))) {  // 첨부 파일
-//            fileName = p.getFileName();
-            String fileName = MimeUtility.decodeText(p.getFileName());
-//            fileName = fileName.replaceAll(" ", "%20");
-            if (fileName != null) {
-                fileNames.add(fileName);
-                // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
-                String tempUserDir = this.downloadTempDir + File.separator + this.userid;
-                File dir = new File(tempUserDir);
-                if (!dir.exists()) {  // tempUserDir 생성
-                    dir.mkdir();
-                }
+    private boolean isAttachment(String disp) {
+        return disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE));
+    }
 
-                String filename = MimeUtility.decodeText(p.getFileName());
-                // 파일명에 " "가 있을 경우 서블릿에 파라미터로 전달시 문제 발생함.
-                // " "를 모두 "_"로 대체함.
-//                filename = filename.replaceAll("%20", " ");
-                DataHandler dh = p.getDataHandler();
-                FileOutputStream fos = new FileOutputStream(tempUserDir + File.separator + filename);
-                dh.writeTo(fos);
-                fos.flush();
-                fos.close();
+    private void processAttachment(Part p) throws Exception {
+        String fileName = MimeUtility.decodeText(p.getFileName());
+        if (fileName != null) {
+            fileNames.add(fileName);  // 사용자 브랜치 변경사항 통합
+            saveAttachment(p, fileName);
+        }
+    }
+
+    private void saveAttachment(Part p, String fileName) throws Exception {
+        String tempUserDir = this.downloadTempDir + File.separator + this.userid;
+        File dir = new File(tempUserDir);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        DataHandler dh = p.getDataHandler();
+        try (FileOutputStream fos = new FileOutputStream(tempUserDir + File.separator + fileName)) {
+            dh.writeTo(fos);
+        }
+    }
+
+    private void processTextMessage(Part p) throws Exception {
+        if (p.isMimeType("text/*")) {
+            body = (String) p.getContent();
+            if (p.isMimeType("text/plain")) {
+                body = body.replaceAll("\r\n", " <br>");
             }
-        } else {  // 메일 본문
-            if (p.isMimeType("text/*")) {
-                body = (String) p.getContent();
-                if (p.isMimeType("text/plain")) {
-                    body = body.replaceAll("\r\n", " <br>");
-                }
-            } else if (p.isMimeType("multipart/alternative")) {
-                // html text보다  plain text 선호
-                Multipart mp = (Multipart) p.getContent();
-                for (int i = 0; i < mp.getCount(); i++) {
-                    Part bp = mp.getBodyPart(i);
-                    if (bp.isMimeType("text/plain")) {  // "text/html"도 있을 것임.
-                        getPart(bp);
-                    }
-                }
-            } else if (p.isMimeType("multipart/*")) {
-                Multipart mp = (Multipart) p.getContent();
-                for (int i = 0; i < mp.getCount(); i++) {
-                    getPart(mp.getBodyPart(i));
-                }
+        } else if (p.isMimeType("multipart/alternative")) {
+            handleMultipartAlternative(p);
+        } else if (p.isMimeType("multipart/*")) {
+            handleMultipart(p);
+        }
+    }
+
+    private void handleMultipartAlternative(Part p) throws Exception {
+        Multipart mp = (Multipart) p.getContent();
+        for (int i = 0; i < mp.getCount(); i++) {
+            Part bp = mp.getBodyPart(i);
+            if (bp.isMimeType("text/plain")) {
+                getPart(bp);
             }
+        }
+    }
+
+    private void handleMultipart(Part p) throws Exception {
+        Multipart mp = (Multipart) p.getContent();
+        for (int i = 0; i < mp.getCount(); i++) {
+            getPart(mp.getBodyPart(i));
         }
     }
 

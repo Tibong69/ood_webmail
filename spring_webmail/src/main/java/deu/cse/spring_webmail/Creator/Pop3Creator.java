@@ -23,5 +23,5 @@ public class Pop3Creator {
                 (String) session.getAttribute("host"), 
                 (String) session.getAttribute("userid"), 
                 (String) session.getAttribute("passwd"));
-    } 
+    }
 }

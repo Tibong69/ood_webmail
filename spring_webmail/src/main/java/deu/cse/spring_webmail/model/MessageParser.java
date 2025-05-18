@@ -29,39 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class MessageParser {
-
-    @NonNull
-    @Getter
-    @Setter
-    private Message message;
-    @NonNull
-    @Getter
-    @Setter
-    private String userid;
-    @Getter
-    @Setter
-    private String toAddress;
-    @Getter
-    @Setter
-    private String fromAddress;
-    @Getter
-    @Setter
-    private String ccAddress;
-    @Getter
-    @Setter
-    private String sentDate;
-    @Getter
-    @Setter
-    private String subject;
-    @Getter
-    @Setter
-    private String body;
-    @Getter
-    @Setter
-    private List<String> fileNames = new ArrayList<>();
-    @Getter
-    @Setter
-    private String downloadTempDir = "C:/temp/download/";
+    @NonNull @Getter @Setter private Message message;
+    @NonNull @Getter @Setter private String userid;
+    @Getter @Setter private String toAddress;
+    @Getter @Setter private String fromAddress;
+    @Getter @Setter private String ccAddress;
+    @Getter @Setter private String sentDate;
+    @Getter @Setter private String subject;
+    @Getter @Setter private String body;
+    @Getter @Setter private String fileName;
+    @Getter @Setter private String downloadTempDir = "C:/temp/download/";
 
     public MessageParser(Message message, String userid, HttpServletRequest request) {
         this(message, userid);
@@ -110,38 +87,47 @@ public class MessageParser {
     // ref: http://www.oracle.com/technetwork/java/faq-135477.html#readattach
     private void getPart(Part p) throws Exception {
         String disp = p.getDisposition();
-        if (isAttachment(disp)) {
+
+        if (isAttachment(disp)) { //첨부 파일이 있으면
             processAttachment(p);
-        } else {
+        } 
+        else { //첨부된 파일이 없으면
             processTextMessage(p);
         }
     }
 
+    //받은 메일에 처리 방식(파일)이 있고, 해당 파일이 첨부 파일 또는 인라인 콘텐츠 인지 확인
     private boolean isAttachment(String disp) {
-        return disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE));
+        return disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT)
+                || disp.equalsIgnoreCase(Part.INLINE));
     }
-
+        
+    //첨부 파일 처리
     private void processAttachment(Part p) throws Exception {
-        String fileName = MimeUtility.decodeText(p.getFileName());
-        if (fileName != null) {
-            fileNames.add(fileName);  // 사용자 브랜치 변경사항 통합
-            saveAttachment(p, fileName);
-        }
-    }
-
-    private void saveAttachment(Part p, String fileName) throws Exception {
+        fileName = MimeUtility.decodeText(p.getFileName());
+        if (fileName != null) 
+            saveAttachment(p);
+   }
+    
+    // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
+    private void saveAttachment(Part p) throws Exception {
+        //임시 저장소(디렉토리) 경로 설정
         String tempUserDir = this.downloadTempDir + File.separator + this.userid;
         File dir = new File(tempUserDir);
-        if (!dir.exists()) {
+        if (!dir.exists()) {  // tempUserDir 생성
             dir.mkdir();
         }
-
+        String filename = MimeUtility.decodeText(p.getFileName());
+        // 파일명에 " "가 있을 경우 서블릿에 파라미터로 전달시 문제 발생함.
+        // " "를 모두 "_"로 대체함.
         DataHandler dh = p.getDataHandler();
-        try (FileOutputStream fos = new FileOutputStream(tempUserDir + File.separator + fileName)) {
-            dh.writeTo(fos);
-        }
+        FileOutputStream fos = new FileOutputStream(tempUserDir + File.separator + filename);
+        dh.writeTo(fos);
+        fos.flush();
+        fos.close();
     }
 
+    //메일 본문 처리(처리 방식 없음 -> 글만 들어있는 메일 처리)
     private void processTextMessage(Part p) throws Exception {
         if (p.isMimeType("text/*")) {
             body = (String) p.getContent();
@@ -149,42 +135,19 @@ public class MessageParser {
                 body = body.replaceAll("\r\n", " <br>");
             }
         } else if (p.isMimeType("multipart/alternative")) {
-            handleMultipartAlternative(p);
-        } else if (p.isMimeType("multipart/*")) {
-            handleMultipart(p);
-        }
-    }
-
-    private void handleMultipartAlternative(Part p) throws Exception {
-        Multipart mp = (Multipart) p.getContent();
-        for (int i = 0; i < mp.getCount(); i++) {
-            Part bp = mp.getBodyPart(i);
-            if (bp.isMimeType("text/plain")) {
-                getPart(bp);
+            // html text보다  plain text 선호
+            Multipart mp = (Multipart) p.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                Part bp = mp.getBodyPart(i);
+                if (bp.isMimeType("text/plain")) {  // "text/html"도 있을 것임.
+                    getPart(bp);
+                }
             }
-        }
-    }
-
-    private void handleMultipart(Part p) throws Exception {
-        Multipart mp = (Multipart) p.getContent();
-        for (int i = 0; i < mp.getCount(); i++) {
-            getPart(mp.getBodyPart(i));
-        }
-    }
-
-    private void printMessage(boolean printBody) {
-        System.out.println("From: " + fromAddress);
-        System.out.println("To: " + toAddress);
-        System.out.println("CC: " + ccAddress);
-        System.out.println("Date: " + sentDate);
-        System.out.println("Subject: " + subject);
-
-        if (printBody) {
-            System.out.println("본 문");
-            System.out.println("---------------------------------");
-            System.out.println(body);
-            System.out.println("---------------------------------");
-            System.out.println("첨부파일: " + fileNames);
+        } else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart) p.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                getPart(mp.getBodyPart(i));
+            }
         }
     }
 

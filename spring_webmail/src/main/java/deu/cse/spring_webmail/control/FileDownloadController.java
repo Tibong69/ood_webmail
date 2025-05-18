@@ -85,5 +85,4 @@ public class FileDownloadController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
-
 }

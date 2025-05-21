@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -38,10 +37,6 @@ public class FileDownloadController {
 
     @Value("${file.download_folder}")
     private String downloadFolder;
-
-    public FileDownloadController(ServletContext ctx) {
-        this.ctx = ctx;
-    }
 
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam("userid") String userId,

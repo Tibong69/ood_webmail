@@ -14,4 +14,13 @@
                 <goal>spring-boot:run</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-mvn clean verify</actionName>
+            <displayName>mvn clean verify</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>verify</goal>
+            </goals>
+        </action>
+        
     </actions>

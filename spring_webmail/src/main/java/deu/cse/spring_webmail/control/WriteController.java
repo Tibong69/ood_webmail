@@ -32,7 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 public class WriteController {
     @Value("${file.upload_folder}")
-    private String UPLOAD_FOLDER;
+     String UPLOAD_FOLDER;
     @Value("${file.max_size}")
     private String MAX_SIZE;
     

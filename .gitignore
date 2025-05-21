@@ -38,3 +38,4 @@ target/
 # OS에서 자동으로 생기는 파일들
 .DS_Store        # macOS
 Thumbs.db        # Windows
+/spring_webmail/nbproject/

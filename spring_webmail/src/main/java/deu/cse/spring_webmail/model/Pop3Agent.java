@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Pop3Agent {
     
     private static final String FALSE_STRING = "false";
+    private static final String STORE_FOLDER = "INBOX";
     
     @Getter @Setter private String host;
     @Getter @Setter private String userid;
@@ -69,7 +70,7 @@ public class Pop3Agent {
         try {
             // Folder 설정
 //            Folder folder = store.getDefaultFolder();
-            Folder folder = store.getFolder("MAILBOX_INBOX");
+            Folder folder = store.getFolder(STORE_FOLDER);
             folder.open(Folder.READ_WRITE);
 
             // Message에 DELETED flag 설정
@@ -102,7 +103,7 @@ public class Pop3Agent {
 
         try {
             // 메일 폴더 열기
-            Folder folder = store.getFolder("INBOX");  // 3.2
+            Folder folder = store.getFolder(STORE_FOLDER);  // 3.2
             folder.open(Folder.READ_ONLY);  // 3.3
 
             // 현재 수신한 메시지 모두 가져오기
@@ -133,7 +134,7 @@ public class Pop3Agent {
         }
 
         try {
-            Folder folder = store.getFolder("INBOX");
+            Folder folder = store.getFolder(STORE_FOLDER);
             folder.open(Folder.READ_ONLY);
 
             Message message = folder.getMessage(n);

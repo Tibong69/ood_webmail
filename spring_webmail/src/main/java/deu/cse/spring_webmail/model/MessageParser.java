@@ -14,6 +14,8 @@ import jakarta.mail.internet.MimeUtility;
 import java.io.File;
 import java.io.FileOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class MessageParser {
     @Getter @Setter private String sentDate;
     @Getter @Setter private String subject;
     @Getter @Setter private String body;
-    @Getter @Setter private String fileName;
+    @Getter @Setter private List<String> fileNames = new ArrayList<>();
     @Getter @Setter private String downloadTempDir = "C:/temp/download/";
 
     public MessageParser(Message message, String userid, HttpServletRequest request) {
@@ -85,7 +87,7 @@ public class MessageParser {
     // ref: http://www.oracle.com/technetwork/java/faq-135477.html#readattach
     private void getPart(Part p) throws Exception {
         String disp = p.getDisposition();
-        
+
         if (isAttachment(disp)) { //첨부 파일이 있으면
             processAttachment(p);
         } 
@@ -102,8 +104,9 @@ public class MessageParser {
         
     //첨부 파일 처리
     private void processAttachment(Part p) throws Exception {
-        fileName = MimeUtility.decodeText(p.getFileName());
-        if (fileName != null) 
+        String filename = MimeUtility.decodeText(p.getFileName());
+        if (filename != null)
+            fileNames.add(filename);
             saveAttachment(p);
    }
     
@@ -124,7 +127,6 @@ public class MessageParser {
         fos.flush();
         fos.close();
     }
-
 
     //메일 본문 처리(처리 방식 없음 -> 글만 들어있는 메일 처리)
     private void processTextMessage(Part p) throws Exception {

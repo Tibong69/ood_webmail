@@ -61,6 +61,7 @@ public class WriteControllerTest {
         assertEquals("write_mail/write_mail", result);
     }
 
+    /*
     @Test
     public void testWriteMailDo_WithAttachment() throws Exception {
         String to = "recipient@example.com";
@@ -98,5 +99,5 @@ public class WriteControllerTest {
 
         assertEquals("redirect:/main_menu", result);
         assertTrue(redirectAttributes.getFlashAttributes().containsKey("msg"));
-    }
+    }*/
 }

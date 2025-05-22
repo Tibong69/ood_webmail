@@ -69,7 +69,7 @@ public class Pop3Agent {
         try {
             // Folder 설정
 //            Folder folder = store.getDefaultFolder();
-            Folder folder = store.getFolder("MAILBOX_INBOX");
+            Folder folder = store.getFolder("INBOX");
             folder.open(Folder.READ_WRITE);
 
             // Message에 DELETED flag 설정

@@ -106,8 +106,9 @@ public class MessageParser {
         
     //첨부 파일 처리
     private void processAttachment(Part p) throws MessagingException, IOException {
-        fileName = MimeUtility.decodeText(p.getFileName());
-        if (fileName != null) 
+        String filename = MimeUtility.decodeText(p.getFileName());
+        if (filename != null)
+            fileNames.add(filename);
             saveAttachment(p);
    }
     

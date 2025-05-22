@@ -89,16 +89,13 @@ public class MessageFormatter {
 
         buffer.append(parser.getBody());
 
-        List<String> attachedFiles = parser.getFileNames();
-        if (!attachedFiles.isEmpty()) {
-            buffer.append(htmlBR + " <hr> 첨부파일: ");
-            for (String fileName : attachedFiles) {
-                buffer.append("<a href=download"
-                        + "?userid=" + this.userid
-                        + "&filename=" + fileName.replaceAll(" ", "%20")
-                        + " target=_top> " + fileName + "</a> ");
-            }
-            buffer.append(htmlBR);
+        String attachedFile = parser.getFileName();
+        if (attachedFile != null) {
+            buffer.append(htmlBR + " <hr> 첨부파일: <a href=download"
+                    + "?userid=" + this.userid
+                    + "&filename=" + attachedFile.replace(" ", "%20")
+                    + " target=_top> " + attachedFile + "</a> " + htmlBR);
+
         }
         return buffer.toString();
     }

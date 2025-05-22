@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor        // 기본 생성자 생성
 public class Pop3Agent {
+    
+    private static final String FALSE_STRING = "false";
+    
     @Getter @Setter private String host;
     @Getter @Setter private String userid;
     @Getter @Setter private String password;
@@ -54,7 +57,8 @@ public class Pop3Agent {
         }
             return status;
     }
-
+    
+    
     public boolean deleteMessage(int msgid, boolean really_delete) {
         boolean status = false;
 
@@ -65,7 +69,7 @@ public class Pop3Agent {
         try {
             // Folder 설정
 //            Folder folder = store.getDefaultFolder();
-            Folder folder = store.getFolder("INBOX");
+            Folder folder = store.getFolder("MAILBOX_INBOX");
             folder.open(Folder.READ_WRITE);
 
             // Message에 DELETED flag 설정
@@ -151,16 +155,16 @@ public class Pop3Agent {
     }
 
    
-    private boolean connectToStore() {
+    protected boolean connectToStore() {
         boolean status = false;
         Properties props = System.getProperties();
         // https://jakarta.ee/specifications/mail/2.1/apidocs/jakarta.mail/jakarta/mail/package-summary.html
         props.setProperty("mail.pop3.host", host);
         props.setProperty("mail.pop3.user", userid);
-        props.setProperty("mail.pop3.apop.enable", "false");
+        props.setProperty("mail.pop3.apop.enable", FALSE_STRING);
         props.setProperty("mail.pop3.disablecapa", "true");  // 200102 LJM - added cf. https://javaee.github.io/javamail/docs/api/com/sun/mail/pop3/package-summary.html
-        props.setProperty("mail.debug", "false");
-        props.setProperty("mail.pop3.debug", "false");
+        props.setProperty("mail.debug", FALSE_STRING);
+        props.setProperty("mail.pop3.debug", FALSE_STRING);
 
         Session session = Session.getInstance(props);
         session.setDebug(false);

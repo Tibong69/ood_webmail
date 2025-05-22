@@ -14,6 +14,8 @@ import jakarta.mail.internet.MimeUtility;
 import java.io.File;
 import java.io.FileOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.mail.MessagingException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -85,7 +87,7 @@ public class MessageParser {
     }
 
     // ref: http://www.oracle.com/technetwork/java/faq-135477.html#readattach
-    private void getPart(Part p) throws Exception {
+    private void getPart(Part p) throws MessagingException, IOException {
         String disp = p.getDisposition();
 
         if (isAttachment(disp)) { //첨부 파일이 있으면
@@ -103,21 +105,21 @@ public class MessageParser {
     }
         
     //첨부 파일 처리
-    private void processAttachment(Part p) throws Exception {
-        String filename = MimeUtility.decodeText(p.getFileName());
-        if (filename != null)
-            fileNames.add(filename);
+    private void processAttachment(Part p) throws MessagingException, IOException {
+        fileName = MimeUtility.decodeText(p.getFileName());
+        if (fileName != null) 
             saveAttachment(p);
    }
     
     // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
-    private void saveAttachment(Part p) throws Exception {
+    private void saveAttachment(Part p) throws MessagingException, IOException {
         //임시 저장소(디렉토리) 경로 설정
         String tempUserDir = this.downloadTempDir + File.separator + this.userid;
         File dir = new File(tempUserDir);
         if (!dir.exists()) {  // tempUserDir 생성
             dir.mkdir();
         }
+        
         String filename = MimeUtility.decodeText(p.getFileName());
         // 파일명에 " "가 있을 경우 서블릿에 파라미터로 전달시 문제 발생함.
         // " "를 모두 "_"로 대체함.
@@ -129,11 +131,11 @@ public class MessageParser {
     }
 
     //메일 본문 처리(처리 방식 없음 -> 글만 들어있는 메일 처리)
-    private void processTextMessage(Part p) throws Exception {
+    private void processTextMessage(Part p) throws MessagingException, IOException {
         if (p.isMimeType("text/*")) {
             body = (String) p.getContent();
             if (p.isMimeType("text/plain")) {
-                body = body.replaceAll("\r\n", " <br>");
+                body = body.replace("\r\n", " <br>");
             }
         } else if (p.isMimeType("multipart/alternative")) {
             // html text보다  plain text 선호

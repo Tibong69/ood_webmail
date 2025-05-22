@@ -8,7 +8,6 @@ package deu.cse.spring_webmail.model;
  *
  * @author gpy11
  */
-import deu.cse.spring_webmail.model.MessageParser;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;

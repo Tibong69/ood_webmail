@@ -31,7 +31,7 @@ public class ReadController {
     @Autowired
     private ServletContext ctx;
     @Autowired
-    private HttpSession session;
+     HttpSession session;
     @Autowired
     private HttpServletRequest request;
     @Value("${file.download_folder}")

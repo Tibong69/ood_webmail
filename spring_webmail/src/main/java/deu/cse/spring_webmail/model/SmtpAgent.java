@@ -17,6 +17,8 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.internet.MimeUtility;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,13 +31,30 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SmtpAgent {
 
-    @Getter @Setter  protected String host = null;
-    @Getter @Setter  protected String userid = null;
-    @Getter @Setter protected String to = null;
-    @Getter @Setter protected String cc = null;
-    @Getter @Setter protected String subj = null;
-    @Getter @Setter protected String body = null;
-    @Getter @Setter protected String file1 = null;
+    @Getter
+    @Setter
+    protected String host = null;
+    @Getter
+    @Setter
+    protected String userid = null;
+    @Getter
+    @Setter
+    protected String to = null;
+    @Getter
+    @Setter
+    protected String cc = null;
+    @Getter
+    @Setter
+    protected String subj = null;
+    @Getter
+    @Setter
+    protected String body = null;
+    @Getter
+    @Setter
+    protected String file1 = null;
+    @Getter
+    @Setter
+    private List<String> attachments = new ArrayList<>();
 
     public SmtpAgent(String host, String userid) {
         this.host = host;
@@ -64,7 +83,6 @@ public class SmtpAgent {
             // msg.setFrom(new InternetAddress(this.userid + "@" + this.host));
             msg.setFrom(new InternetAddress(this.userid));  // 200102 LJM - 테스트 목적으로 수정
             //msg.setFrom(new InternetAddress("jongmin@deu.ac.kr"));
-
 
             // setRecipient() can be called repeatedly if ';' or ',' exists
             if (this.to.indexOf(';') != -1) {
@@ -96,20 +114,20 @@ public class SmtpAgent {
             // mbp.setHeader("Content-Transfer-Encoding", "8bit");
             mbp.setText(this.body);
 
-            Multipart mp = new MimeMultipart();
+            Multipart mp = new MimeMultipart("mixed");
             mp.addBodyPart(mbp);
 
             // 첨부 파일 추가
-            if (this.file1 != null) {
-                MimeBodyPart a1 = new MimeBodyPart();
-                DataSource src = new FileDataSource(this.file1);
-                a1.setDataHandler(new DataHandler(src));
-                // 22011 LJM: 윈도우즈/우분투에 따라서 달라져야 함
-                int index = this.file1.lastIndexOf(File.separator);
-                String fileName = this.file1.substring(index + 1);
-                // "B": base64, "Q": quoted-printable
-                a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
-                mp.addBodyPart(a1);
+            if (attachments != null && !attachments.isEmpty()) {
+                for (String filePath : attachments) {
+                    MimeBodyPart attachmentPart = new MimeBodyPart();
+                    DataSource src = new FileDataSource(filePath);
+                    attachmentPart.setDataHandler(new DataHandler(src));
+                    // 22011 LJM: 윈도우즈/우분투에 따라서 달라져야 함
+                    String fileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                    attachmentPart.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
+                    mp.addBodyPart(attachmentPart);
+                }
             }
             msg.setContent(mp);
 
@@ -118,16 +136,16 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
-            if (this.file1 != null) {
-                File f = new File(this.file1);
+            for (String filePath : attachments) {
+                File f = new File(filePath);
                 if (!f.delete()) {
-                    log.error(this.file1 + ": 파일 삭제가 제대로 안 됨.");
+                    log.error(filePath + ": 파일 삭제가 제대로 안 됨.");
                 }
             }
             status = true;
         } catch (Exception ex) {
             log.error("sendMessage() error: {}", ex);
         }
-            return status;
+        return status;
     }  // sendMessage()
 }

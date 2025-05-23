@@ -4,6 +4,7 @@
  */
 package deu.cse.spring_webmail.control;
 
+import deu.cse.spring_webmail.creator.AdminCreator;
 import deu.cse.spring_webmail.model.Pop3Agent;
 import deu.cse.spring_webmail.creator.Pop3Creator;
 import deu.cse.spring_webmail.model.UserAdminAgent;
@@ -70,7 +71,9 @@ public class SystemController {
     private String mainMenu = "main_menu";
     private String chpw = "change_password";
     
+    //Creator
     private Pop3Creator popCreator = new Pop3Creator();
+    private AdminCreator adminCreator = new AdminCreator();
 
     @GetMapping("/")
     public String index() {
@@ -174,7 +177,7 @@ public class SystemController {
 
         try {
             String cwd = ctx.getRealPath(".");
-            UserAdminAgent agent = new UserAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
+            UserAdminAgent agent = adminCreator.creatAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
                     ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR);
 
             // if (addUser successful)  사용자 등록 성공 팦업창
@@ -210,7 +213,7 @@ public class SystemController {
 
         try {
             String cwd = ctx.getRealPath(".");
-            UserAdminAgent agent = new UserAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
+            UserAdminAgent agent = adminCreator.creatAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
                     ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR);
             agent.deleteUsers(selectedUsers);  // 수정!!!
         } catch (Exception ex) {
@@ -222,8 +225,8 @@ public class SystemController {
 
     private List<String> getUserList() {
         String cwd = ctx.getRealPath(".");
-        UserAdminAgent agent = new UserAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
-                ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR);
+        UserAdminAgent agent =adminCreator.creatAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT, cwd,
+                    ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR);
         List<String> userList = agent.getUserList();
         log.debug("userList = {}", userList);
 
@@ -305,11 +308,10 @@ public class SystemController {
 
         // 3. JMX를 통해 비밀번호 변경
         try {
-            UserAdminAgent agent = new UserAdminAgent(
-                    JAMES_HOST, JAMES_CONTROL_PORT,
+            UserAdminAgent agent = adminCreator.creatAdminAgent(JAMES_HOST, JAMES_CONTROL_PORT,
                     ctx.getRealPath("."),
-                    ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR
-            );
+                    ROOT_ID, ROOT_PASSWORD, ADMINISTRATOR);
+            
             if (agent.setPassword(userid, newPassword)) {
                 session.setAttribute("password", newPassword); // 세션 업데이트
                 attrs.addFlashAttribute("msg", "비밀번호가 성공적으로 변경되었습니다.");

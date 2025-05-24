@@ -4,17 +4,11 @@
  */
 package deu.cse.spring_webmail.creator;
 
-import deu.cse.spring_webmail.model.UserAdminAgent;
 import jakarta.servlet.ServletContext;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 /**

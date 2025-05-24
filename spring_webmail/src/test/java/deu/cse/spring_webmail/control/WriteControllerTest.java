@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.springframework.web.multipart.MultipartFile;
 
 public class WriteControllerTest {
 
@@ -61,43 +62,50 @@ public class WriteControllerTest {
         assertEquals("write_mail/write_mail", result);
     }
 
-    /*
-    @Test
-    public void testWriteMailDo_WithAttachment() throws Exception {
-        String to = "recipient@example.com";
-        String cc = "cc@example.com";
-        String subj = "Test Subject";
-        String body = "Test Body";
+   @Test
+public void testWriteMailDo_WithAttachment() throws Exception {
+    String to = "recipient@example.com";
+    String cc = "cc@example.com";
+    String subj = "Test Subject";
+    String body = "Test Body";
 
-        MockMultipartFile upFile = new MockMultipartFile(
-                "file1", "test.txt", "text/plain", "Hello, World!".getBytes(StandardCharsets.UTF_8));
+    MockMultipartFile upFile = new MockMultipartFile(
+            "file1", "test.txt", "text/plain", "Hello, World!".getBytes(StandardCharsets.UTF_8));
+    MultipartFile[] files = new MultipartFile[] { upFile };
 
-        when(session.getAttribute("host")).thenReturn("localhost");
-        when(session.getAttribute("userid")).thenReturn("user@example.com");
+    when(session.getAttribute("host")).thenReturn("localhost");
+    when(session.getAttribute("userid")).thenReturn("user@example.com");
 
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        when(servletContext.getRealPath("/test/upload")).thenReturn(tempDir.getAbsolutePath());
+    File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    when(servletContext.getRealPath("/test/upload")).thenReturn(tempDir.getAbsolutePath());
 
-        String result = controller.writeMailDo(to, cc, subj, body, upFile, redirectAttributes);
+    String result = controller.writeMailDo(to, cc, subj, body, files, redirectAttributes);
 
-        assertEquals("redirect:/main_menu", result);
-        assertTrue(redirectAttributes.getFlashAttributes().containsKey("msg"));
-    }
+    assertEquals("redirect:/main_menu", result);
+    assertTrue(redirectAttributes.getFlashAttributes().containsKey("msg"));
+}
 
-    @Test
-    public void testWriteMailDo_WithoutAttachment() {
-        String to = "recipient@example.com";
-        String cc = "cc@example.com";
-        String subj = "No Attachment";
-        String body = "No file attached";
-        MockMultipartFile upFile = new MockMultipartFile("file1", "", "text/plain", new byte[0]);
+@Test
+public void testWriteMailDo_WithoutAttachment() throws Exception {
+    String to = "recipient@example.com";
+    String cc = "cc@example.com";
+    String subj = "No Attachment";
+    String body = "No file attached";
 
-        when(session.getAttribute("host")).thenReturn("localhost");
-        when(session.getAttribute("userid")).thenReturn("user@example.com");
+    MockMultipartFile upFile = new MockMultipartFile(
+            "file1", "", "text/plain", new byte[0]);
+    MultipartFile[] files = new MultipartFile[] { upFile };
 
-        String result = controller.writeMailDo(to, cc, subj, body, upFile, redirectAttributes);
+    when(session.getAttribute("host")).thenReturn("localhost");
+    when(session.getAttribute("userid")).thenReturn("user@example.com");
 
-        assertEquals("redirect:/main_menu", result);
-        assertTrue(redirectAttributes.getFlashAttributes().containsKey("msg"));
-    }*/
+    File tempDir = new File(System.getProperty("java.io.tmpdir"));
+    when(servletContext.getRealPath("/test/upload")).thenReturn(tempDir.getAbsolutePath());
+
+    String result = controller.writeMailDo(to, cc, subj, body, files, redirectAttributes);
+
+    assertEquals("redirect:/main_menu", result);
+    assertTrue(redirectAttributes.getFlashAttributes().containsKey("msg"));
+}
+
 }

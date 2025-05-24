@@ -36,28 +36,12 @@ public class AdminCreatorTest {
     @InjectMocks
     private AdminCreator creator;
 
-    
-    public AdminCreatorTest() {
-    }
-    
-    @BeforeAll
-    public static void setUpClass() {
-    }
-    
-    @AfterAll
-    public static void tearDownClass() {
-    }
-    
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         creator = new AdminCreator();
     }
     
-    @AfterEach
-    public void tearDown() {
-    }
-
     /**
      * Test of creatAdminAgent method, of class AdminCreator.
      */

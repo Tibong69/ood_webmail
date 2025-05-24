@@ -65,8 +65,6 @@ public class AdminCreatorTest {
     public void testCreatAdminAgent() {
         System.out.println("creatAdminAgent");
         creator.creatAdminAgent(server, port, cwd, root_id, root_pass, admin_id);
-        
-        // TODO review the generated test code and remove the default call to fail.
     }
     
 }

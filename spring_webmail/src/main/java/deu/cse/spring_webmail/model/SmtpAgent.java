@@ -88,7 +88,7 @@ public class SmtpAgent {
             if (this.to.indexOf(';') != -1) {
                 this.to = this.to.replace(";", ",");
             }
-            msg.setRecipients(Message.RecipientType.TO, this.to);  // 200102 LJM - 수정
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(this.to));  // 200102 LJM - 수정
 
             if (this.cc.length() > 1) {
                 if (this.cc.indexOf(';') != -1) {

@@ -134,6 +134,12 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/control/CommandTpye*</exclude>
+                                <exclude>**/ServletInitializer*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>         

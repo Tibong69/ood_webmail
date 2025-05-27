@@ -7,12 +7,12 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class UserAdminAgent {
 
     private String server;
@@ -124,12 +124,20 @@ public class UserAdminAgent {
         }
         return status;
     }
+    
+    private void ensureConnected() throws Exception {
+        if (mbsc == null) {
+            log.warn("JMX 연결이 끊어져 재연결 시도...");
+            connect();
+        }
+    }
 
     public boolean verify(String userId) {
         try {
+            ensureConnected();
             Boolean exists = (Boolean) mbsc.invoke(
                     userRepositoryMBean,
-                    "contains",
+                    "verifyExists",
                     new Object[]{userId},
                     new String[]{javaString}
             );

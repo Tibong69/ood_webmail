@@ -9,10 +9,15 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import deu.cse.spring_webmail.model.MailSummary;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -62,31 +67,31 @@ public class MessageFormatterTest {
         String html = formatter.getMessage(realMessage);
 
         assertAll("필드 값 검증",
-            () -> assertEquals(TEST_SENDER, formatter.getSender()),
-            () -> assertEquals(TEST_SUBJECT, formatter.getSubject()),
-            () -> assertTrue(formatter.getBody().contains(TEST_BODY))
+                () -> assertEquals(TEST_SENDER, formatter.getSender()),
+                () -> assertEquals(TEST_SUBJECT, formatter.getSubject()),
+                () -> assertTrue(formatter.getBody().contains(TEST_BODY))
         );
 
         assertAll("HTML 출력 검증",
-            () -> assertTrue(html.contains("보낸 사람: " + TEST_SENDER)),
-            () -> assertTrue(html.contains(TEST_BODY))
+                () -> assertTrue(html.contains("보낸 사람: " + TEST_SENDER)),
+                () -> assertTrue(html.contains(TEST_BODY))
         );
     }
 
     @Test
     public void testGetMessage_WithAttachment() throws Exception {
         MimeMultipart multipart = new MimeMultipart();
-        
+
         MimeBodyPart textPart = new MimeBodyPart();
         textPart.setText(TEST_BODY);
         multipart.addBodyPart(textPart);
-        
+
         MimeBodyPart attachmentPart = new MimeBodyPart();
         attachmentPart.setContent("Test Attachment", "text/plain");
         attachmentPart.setFileName("testfile.txt");
         attachmentPart.setDisposition(MimeBodyPart.ATTACHMENT);
         multipart.addBodyPart(attachmentPart);
-        
+
         realMessage.setContent(multipart);
         realMessage.saveChanges();
 
@@ -98,22 +103,41 @@ public class MessageFormatterTest {
 
     @Test
     public void testGetMessageTable_EmptyMessages() {
-        Message[] messages = new Message[0];
+        // given
+        List<MailSummary> emptyList = new ArrayList<>();
 
-        String html = formatter.getMessageTable(messages);
+        // when
+        String html = formatter.getMessageTable(emptyList);
 
-        assertTrue(html.contains("<table>"));
-        assertFalse(html.contains("<tr> <td id=no>"));
+        // then
+        assertTrue(html.contains("<table border='1'>"));
+        assertTrue(html.contains("</table>"));
+        assertFalse(html.contains("<tr><td>"));
     }
 
     @Test
-    public void testGetMessageTable_MultipleMessages() throws Exception {
-        Message[] messages = {realMessage, realMessage};
+    public void testGetMessageTable_MultipleMessages() {
+        // given
+        List<MailSummary> mailList = Arrays.asList(
+                new MailSummary(1, "sender1@test.com", "Subject 1", new Date()),
+                new MailSummary(2, "sender2@test.com", "Subject 2", new Date())
+        );
 
-        String html = formatter.getMessageTable(messages);
+        // when
+        String html = formatter.getMessageTable(mailList);
 
-        assertTrue(html.split("<tr>").length >= 3);
-        assertTrue(html.contains("msgid=1"));
-        assertTrue(html.contains("msgid=2"));
+        // then
+        assertAll("HTML 구조 검증",
+                () -> assertTrue(html.contains("<table border='1'>")),
+                () -> assertTrue(html.contains("</table>")),
+                () -> assertTrue(html.split("<tr>").length >= 3) // 헤더 + 2개 행
+        );
+
+        assertAll("메일 데이터 검증",
+                () -> assertTrue(html.contains("sender1@test.com")),
+                () -> assertTrue(html.contains("Subject 1")),
+                () -> assertTrue(html.contains("msgid=1")),
+                () -> assertTrue(html.contains("msgid=2"))
+        );
     }
 }

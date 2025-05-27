@@ -69,7 +69,6 @@ public class Pop3Agent {
 
         try {
             // Folder 설정
-//            Folder folder = store.getDefaultFolder();
             Folder folder = store.getFolder(STORE_FOLDER);
             folder.open(Folder.READ_WRITE);
 
@@ -78,8 +77,6 @@ public class Pop3Agent {
             msg.setFlag(Flags.Flag.DELETED, really_delete);
 
             // 폴더에서 메시지 삭제
-            // Message [] expungedMessage = folder.expunge();
-            // <-- 현재 지원 안 되고 있음. 폴더를 close()할 때 expunge해야 함.
             folder.close(true);  // expunge == true
             store.close();
             status = true;

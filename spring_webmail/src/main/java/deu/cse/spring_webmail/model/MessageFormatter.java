@@ -67,13 +67,11 @@ public class MessageFormatter {
         buffer.append("</table>");
 
         return buffer.toString();
-//        return "MessageFormatter 테이블 결과";
     }
 
     public String getMessage(Message message) {
         StringBuilder buffer = new StringBuilder();
 
-        // MessageParser parser = new MessageParser(message, userid);
         MessageParser parser = new MessageParser(message, userid, request);
         parser.parse(true);
 
@@ -95,7 +93,7 @@ public class MessageFormatter {
             for (String fileName : attachedFiles) {
                 buffer.append("<a href=download"
                         + "?userid=" + this.userid
-                        + "&filename=" + fileName.replaceAll(" ", "%20")
+                        + "&filename=" + fileName.replace(" ", "%20")
                         + " target=_top> " + fileName + "</a> ");
             }
             buffer.append(htmlBR);

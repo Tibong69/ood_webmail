@@ -62,7 +62,6 @@ public class MessageParser {
                 getPart(message);
             }
             // 220611 LJM: 필요시 true로 하여 메시지 본문 볼 수 있도록 할 것.
-            // printMessage(false);  
             //  예외가 발생하지 않았으므로 정상적으로 동작하였음.
             status = true;
         } catch (Exception ex) {

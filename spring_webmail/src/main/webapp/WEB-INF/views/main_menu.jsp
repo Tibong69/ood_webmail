@@ -32,6 +32,17 @@
         <!-- 메시지 삭제 링크를 누르면 바로 삭제되어 실수할 수 있음. 해결 방법은? -->
         <div id="main">
             ${messageList}
+            
+        <div class="pagination">
+            <c:if test="${currentPage > 1}">
+                <a href="main_menu?page=${currentPage - 1}">이전</a>
+            </c:if>
+
+            <span>페이지 ${currentPage} / ${totalPages}</span>
+
+            <c:if test="${currentPage < totalPages}">
+                <a href="main_menu?page=${currentPage + 1}">다음</a>
+            </c:if>
         </div>
 
         <%@include file="footer.jspf"%>

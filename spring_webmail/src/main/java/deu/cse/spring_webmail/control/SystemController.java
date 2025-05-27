@@ -7,6 +7,8 @@ package deu.cse.spring_webmail.control;
 import deu.cse.spring_webmail.creator.AdminCreator;
 import deu.cse.spring_webmail.model.Pop3Agent;
 import deu.cse.spring_webmail.creator.Pop3Creator;
+import deu.cse.spring_webmail.model.MailSummary;
+import deu.cse.spring_webmail.model.MessageFormatter;
 import deu.cse.spring_webmail.model.UserAdminAgent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +19,7 @@ import javax.imageio.ImageIO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,11 +146,27 @@ public class SystemController {
     }
 
     @GetMapping("/main_menu")
-    public String mainMenu(Model model) {
+    public String mainMenu(@RequestParam(defaultValue = "1") int page, Model model, HttpSession session) {
         Pop3Agent pop3 = popCreator.createPopAgent(session);
-        String messageList = pop3.getMessageList();
+        int pageSize = 10;
+
+        List<MailSummary> allMails = pop3.getAllMailSummaries();
+        Collections.reverse(allMails);
+        
+        int totalPages = (int) Math.ceil((double) allMails.size() / pageSize);
+        int startIdx = (page - 1) * pageSize;
+        int endIdx = Math.min(startIdx + pageSize, allMails.size());
+
+        List<MailSummary> pageMails = allMails.subList(startIdx, endIdx);
+
+        MessageFormatter formatter = new MessageFormatter((String) session.getAttribute("userid"));
+        String messageList = formatter.getMessageTable(pageMails);
+
         model.addAttribute("messageList", messageList);
-        return mainMenu;
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        return "main_menu";
     }
 
     @GetMapping("/admin_menu")

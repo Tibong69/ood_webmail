@@ -35,39 +35,30 @@ public class MessageFormatter {
     //HTML Tag
     String htmlBR = "<br>";
 
-    public String getMessageTable(Message[] messages) {
+    public String getMessageTable(List<MailSummary> mailList) {
         StringBuilder buffer = new StringBuilder();
+        buffer.append("<table border='1'>")
+              .append("<tr><th>No.</th><th>보낸 사람</th><th>제목</th><th>날짜</th><th>삭제</th></tr>");
 
-        // 메시지 제목 보여주기
-        buffer.append("<table>");  // table start
-        buffer.append("<tr> "
-                + " <th> No. </td> "
-                + " <th> 보낸 사람 </td>"
-                + " <th> 제목 </td>     "
-                + " <th> 보낸 날짜 </td>   "
-                + " <th> 삭제 </td>   "
-                + " </tr>");
+        for (MailSummary mail : mailList) {
+            buffer.append("<tr>")
+                  .append("<td>").append(mail.getMessageNumber()).append("</td>")
+                  .append("<td id='sender'>").append(mail.getFrom()).append("</td>")
+                  .append("<td id='subject'><a href='show_message?msgid=")
+                  .append(mail.getMessageNumber()).append("'>")
+                  .append(mail.getSubject()).append("</a></td>")
+                  .append("<td id='date'>").append(mail.getSentDate()).append("</td>")
+                  .append("<td id='delete'><a href='delete_mail.do?msgid=")
+                  .append(mail.getMessageNumber())
+                  .append("' onclick=\"return confirm('정말 삭제하시겠습니까?')\">삭제</a></td>")
+                  .append("</tr>");
 
-        for (int i = messages.length - 1; i >= 0; i--) {
-            MessageParser parser = new MessageParser(messages[i], userid);
-            parser.parse(false);  // envelope 정보만 필요
-            // 메시지 헤더 포맷
-            // 추출한 정보를 출력 포맷 사용하여 스트링으로 만들기
-            buffer.append("<tr> "
-                    + " <td id=no>" + (i + 1) + " </td> "
-                    + " <td id=sender>" + parser.getFromAddress() + "</td>"
-                    + " <td id=subject> "
-                    + " <a href=show_message?msgid=" + (i + 1) + " title=\"메일 보기\"> "
-                    + parser.getSubject() + "</a> </td>"
-                    + " <td id=date>" + parser.getSentDate() + "</td>"
-                    + " <td id=delete>"
-                    + "<a href='delete_mail.do?msgid=" + (i + 1) + "' onclick=\"return confirm('정말 삭제하시겠습니까?');\">삭제</a>"
-                    + " </tr>");
         }
-        buffer.append("</table>");
 
+        buffer.append("</table>");
         return buffer.toString();
     }
+
 
     public String getMessage(Message message) {
         StringBuilder buffer = new StringBuilder();
@@ -93,10 +84,11 @@ public class MessageFormatter {
             for (String fileName : attachedFiles) {
                 buffer.append("<a href=download"
                         + "?userid=" + this.userid
-                        + "&filename=" + fileName.replace(" ", "%20")
+                        + "&filename=" + fileName.replaceAll(" ", "%20")
                         + " target=_top> " + fileName + "</a> ");
             }
             buffer.append(htmlBR);
+
         }
         return buffer.toString();
     }

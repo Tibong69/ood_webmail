@@ -4,6 +4,7 @@
  */
 package deu.cse.spring_webmail.model;
 
+import jakarta.mail.Address;
 import jakarta.mail.FetchProfile;
 import jakarta.mail.Flags;
 import jakarta.mail.Folder;
@@ -12,6 +13,9 @@ import jakarta.mail.Session;
 import jakarta.mail.Store;
 import java.util.Properties;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor        // 기본 생성자 생성
 public class Pop3Agent {
-    
+
     private static final String FALSE_STRING = "false";
     private static final String STORE_FOLDER = "INBOX";
     
@@ -36,16 +40,19 @@ public class Pop3Agent {
     @Getter @Setter private HttpServletRequest request;
     
     // 220612 LJM - added to implement REPLY
-    @Getter private String sender;
-    @Getter private String subject;
-    @Getter private String body;
-    
+    @Getter
+    private String sender;
+    @Getter
+    private String subject;
+    @Getter
+    private String body;
+
     public Pop3Agent(String host, String userid, String password) {
         this.host = host;
         this.userid = userid;
         this.password = password;
     }
-    
+
     public boolean validate() {
         boolean status = false;
 
@@ -56,10 +63,9 @@ public class Pop3Agent {
             log.error("Pop3Agent.validate() error : " + ex);
             status = false;  // for clarity
         }
-            return status;
+        return status;
     }
-    
-    
+
     public boolean deleteMessage(int msgid, boolean really_delete) {
         boolean status = false;
 
@@ -91,35 +97,17 @@ public class Pop3Agent {
      */
     public String getMessageList() {
         String result = "";
-        Message[] messages = null;
+        List<MailSummary> mailSummaries = getAllMailSummaries();
 
-        if (!connectToStore()) {  // 3.1
-            log.error("POP3 connection failed!");
-            return "POP3 연결이 되지 않아 메일 목록을 볼 수 없습니다.";
+        if (mailSummaries.isEmpty()) {
+            log.error("메일이 없습니다.");
+            return "메일이 없습니다.";
         }
 
-        try {
-            // 메일 폴더 열기
-            Folder folder = store.getFolder(STORE_FOLDER);  // 3.2
-            folder.open(Folder.READ_ONLY);  // 3.3
+        MessageFormatter formatter = new MessageFormatter(userid);
+        result = formatter.getMessageTable(mailSummaries);
 
-            // 현재 수신한 메시지 모두 가져오기
-            messages = folder.getMessages();      // 3.4
-            FetchProfile fp = new FetchProfile();
-            // From, To, Cc, Bcc, ReplyTo, Subject & Date
-            fp.add(FetchProfile.Item.ENVELOPE);
-            folder.fetch(messages, fp);
-
-            MessageFormatter formatter = new MessageFormatter(userid);  //3.5
-            result = formatter.getMessageTable(messages);   // 3.6
-
-            folder.close(true);  // 3.7
-            store.close();       // 3.8
-        } catch (Exception ex) {
-            log.error("Pop3Agent.getMessageList() : exception = {}", ex.getMessage());
-            result = "Pop3Agent.getMessageList() : exception = " + ex.getMessage();
-        } 
-         return result;
+        return result;
     }
 
     public String getMessage(int n) {
@@ -148,11 +136,10 @@ public class Pop3Agent {
         } catch (Exception ex) {
             log.error("Pop3Agent.getMessageList() : exception = {}", ex);
             result = "Pop3Agent.getMessage() : exception = " + ex;
-        } 
-            return result;
+        }
+        return result;
     }
 
-   
     protected boolean connectToStore() {
         boolean status = false;
         Properties props = System.getProperties();
@@ -173,8 +160,58 @@ public class Pop3Agent {
             status = true;
         } catch (Exception ex) {
             log.error("connectToStore 예외: {}", ex.getMessage());
-        } 
-            return status;
+        }
+        return status;
     }
- 
+
+    public List<MailSummary> getAllMailSummaries() {
+        List<MailSummary> summaries = new ArrayList<>();
+        if (!connectToStore()) {
+            log.error("POP3 연결 실패");
+            return summaries;
+        }
+
+        try {
+            Folder folder = store.getFolder("INBOX");
+            folder.open(Folder.READ_ONLY);
+            Message[] messages = folder.getMessages();
+
+            FetchProfile fp = new FetchProfile();
+            fp.add(FetchProfile.Item.ENVELOPE);
+            folder.fetch(messages, fp);
+
+            for (Message msg : messages) {
+                String from = extractSender(msg);
+                String subject = msg.getSubject() != null ? msg.getSubject() : "(제목 없음)";
+                Date sentDate = msg.getSentDate() != null ? msg.getSentDate() : new Date(0);
+
+                summaries.add(new MailSummary(
+                        msg.getMessageNumber(),
+                        from,
+                        subject,
+                        sentDate
+                ));
+            }
+
+            folder.close(false);
+            store.close();
+            return summaries;
+        } catch (Exception ex) {
+            log.error("메일 가져오기 실패: {}", ex.getMessage());
+            return summaries;
+        }
+    }
+
+    private String extractSender(Message msg) {
+        try {
+            Address[] froms = msg.getFrom();
+            if (froms != null && froms.length > 0) {
+                return froms[0].toString();
+            }
+        } catch (Exception e) {
+            log.error("발신자 추출 실패: {}", e.getMessage());
+        }
+        return "(알 수 없음)";
+    }
+
 }

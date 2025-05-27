@@ -90,11 +90,16 @@ public void testAddUserFailure() throws Exception {
         assertFalse(result);
     }
 
-    @Test
-    public void testVerifyTrue() throws Exception {
-        when(mbsc.invoke(any(), eq("contains"), any(), any())).thenReturn(Boolean.TRUE);
-        assertTrue(agent.verify("user1"));
-    }
+@Test
+public void testVerifyTrue() throws Exception {
+    Object[] params = { "user1" };
+    String[] signature = { String.class.getName() };
+
+    when(mbsc.invoke(eq(mockObjectName), eq("verifyExists"), eq(params), eq(signature)))
+        .thenReturn(Boolean.TRUE);
+
+    assertTrue(agent.verify("user1"));
+}
 
     @Test
     public void testVerifyFalse() throws Exception {

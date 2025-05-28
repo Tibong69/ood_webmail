@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class MessageFormatterTest {
+class MessageFormatterTest {
 
     private static final String TEST_USER_ID = "testuser";
     private static final String TEST_SENDER = "sender@example.com";
@@ -35,7 +35,7 @@ public class MessageFormatterTest {
     private HttpServletRequest mockRequest;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         // Mock 객체 초기화
         mockRequest = Mockito.mock(HttpServletRequest.class);
         ServletContext mockServletContext = Mockito.mock(ServletContext.class);
@@ -61,7 +61,7 @@ public class MessageFormatterTest {
     }
 
     @Test
-    public void testGetMessage_NormalMessage() throws Exception {
+    void testGetMessage_NormalMessage() throws Exception {
         formatter.setRequest(mockRequest);
 
         String html = formatter.getMessage(realMessage);
@@ -79,7 +79,7 @@ public class MessageFormatterTest {
     }
 
     @Test
-    public void testGetMessage_WithAttachment() throws Exception {
+    void testGetMessage_WithAttachment() throws Exception {
         MimeMultipart multipart = new MimeMultipart();
 
         MimeBodyPart textPart = new MimeBodyPart();
@@ -102,7 +102,7 @@ public class MessageFormatterTest {
     }
 
     @Test
-    public void testGetMessageTable_EmptyMessages() {
+    void testGetMessageTable_EmptyMessages() {
         // given
         List<MailSummary> emptyList = new ArrayList<>();
 
@@ -116,7 +116,7 @@ public class MessageFormatterTest {
     }
 
     @Test
-    public void testGetMessageTable_MultipleMessages() {
+    void testGetMessageTable_MultipleMessages() {
         // given
         List<MailSummary> mailList = Arrays.asList(
                 new MailSummary(1, "sender1@test.com", "Subject 1", new Date()),

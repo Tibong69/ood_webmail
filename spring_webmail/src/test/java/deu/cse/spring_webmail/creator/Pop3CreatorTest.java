@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
  *
  * @author 박상현
  */
-public class Pop3CreatorTest {
+class Pop3CreatorTest {
     
     private String host = "testhost";
     private String userID = "testuserid";
@@ -29,7 +29,7 @@ public class Pop3CreatorTest {
     private Pop3Creator creator;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         creator = new Pop3Creator();
     }
@@ -38,7 +38,7 @@ public class Pop3CreatorTest {
      * Test of createPopAgent method, of class Pop3Creator.
      */
     @Test
-    public void testCreatePopAgent_3args() {
+    void testCreatePopAgent_3args() {
         creator.createPopAgent(host, userID, userPW);
     }
 
@@ -46,7 +46,7 @@ public class Pop3CreatorTest {
      * Test of createPopAgent method, of class Pop3Creator.
      */
     @Test
-    public void testCreatePopAgent_HttpSession() {
+    void testCreatePopAgent_HttpSession() {
         System.out.println("createPopAgent");
         
         when(session.getAttribute("host")).thenReturn(host);

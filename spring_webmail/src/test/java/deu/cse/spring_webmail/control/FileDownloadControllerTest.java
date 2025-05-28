@@ -25,7 +25,7 @@ import org.mockito.MockitoAnnotations;
  * @author 박상현
  */
 @Slf4j
-public class FileDownloadControllerTest {
+class FileDownloadControllerTest {
     @Mock
     private ServletContext ctx;
     
@@ -49,7 +49,7 @@ public class FileDownloadControllerTest {
     
     //테스팅전 설정 (다운로드 디렉토리, 다운로드 파일 설정)
     @BeforeAll
-    public static void setUpClass() throws IOException {
+    static void setUpClass() throws IOException {
         //테스팅용 임시 다운로드 디렉토리 경로 설정 및 생성
         testTmpDirPath = Files.createTempDirectory(testDownloadFolder);
         
@@ -64,7 +64,7 @@ public class FileDownloadControllerTest {
     }
     
     //FileDownloadController의 필드 값 주입용 메서드
-    public static void setField(Object target, String filedName, Object value) throws Exception{
+    static void setField(Object target, String filedName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(filedName);
         field.setAccessible(true);
         field.set(target, value);
@@ -72,7 +72,7 @@ public class FileDownloadControllerTest {
     
     //FileDownloadController의 필드 값 주입
     @BeforeEach
-    public void setUp() throws Exception{
+    void setUp() throws Exception{
         MockitoAnnotations.openMocks(this);
         fileDownloadController = new FileDownloadController();
         setField(fileDownloadController, "downloadFolder", testTmpDirPath.toString());
@@ -80,7 +80,7 @@ public class FileDownloadControllerTest {
     }
     
     @Test
-    public void testDownload() throws Exception{
+    void testDownload() throws Exception{
         System.out.println("===== 테스팅 시작 =====");
         log.info("정상 시나리오 테스팅");
         //ctx.getRealpath시 전달할 값(디렉토리 경로) 설정
@@ -93,7 +93,7 @@ public class FileDownloadControllerTest {
     }
     
     @Test
-    public void testDownloadWrongPath() throws Exception{
+    void testDownloadWrongPath() throws Exception{
         System.out.println("===== 테스팅 시작 =====");
         log.info("잘못된 디렉토리 경로 테스팅");
 

@@ -13,9 +13,9 @@ import deu.cse.spring_webmail.model.UserAdminAgent;
 public class AdminCreator {
     
     public UserAdminAgent creatAdminAgent(String server, int port, String cwd,
-            String root_id, String root_pass, String admin_id){
+            String rootId, String rootPass, String adminId){
         
-        UserAdminAgent adminAgent = new UserAdminAgent(server, port, cwd, root_id, root_pass, admin_id);
+        UserAdminAgent adminAgent = new UserAdminAgent(server, port, cwd, rootId, rootPass, adminId);
         return adminAgent;
     }
     

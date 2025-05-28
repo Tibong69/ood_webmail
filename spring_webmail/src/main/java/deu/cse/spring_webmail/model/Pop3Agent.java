@@ -172,7 +172,7 @@ public class Pop3Agent {
         }
 
         try {
-            Folder folder = store.getFolder("INBOX");
+            Folder folder = store.getFolder(STORE_FOLDER);
             folder.open(Folder.READ_ONLY);
             Message[] messages = folder.getMessages();
 

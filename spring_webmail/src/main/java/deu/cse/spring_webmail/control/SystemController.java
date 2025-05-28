@@ -159,14 +159,14 @@ public class SystemController {
 
         List<MailSummary> pageMails = allMails.subList(startIdx, endIdx);
 
-        MessageFormatter formatter = new MessageFormatter((String) session.getAttribute("userid"));
+        MessageFormatter formatter = new MessageFormatter((String) session.getAttribute(userID));
         String messageList = formatter.getMessageTable(pageMails);
 
         model.addAttribute("messageList", messageList);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
 
-        return "main_menu";
+        return mainMenu;
     }
 
     @GetMapping("/admin_menu")
@@ -298,12 +298,12 @@ public class SystemController {
             @RequestParam String confirmPassword,
             RedirectAttributes attrs) {
 
-        String userid = (String) session.getAttribute("userid");
+        String userid = (String) session.getAttribute(userID);
 
         // 1. 현재 비밀번호 검증
         
         Pop3Agent pop3 = popCreator.createPopAgent(
-                (String) session.getAttribute("host"),
+                (String) session.getAttribute(role),
                 userid,
                 currentPassword
         );

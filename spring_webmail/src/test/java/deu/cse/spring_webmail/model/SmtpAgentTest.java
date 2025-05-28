@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SmtpAgentTest {
+class SmtpAgentTest {
 
     private SmtpAgent smtpAgent;
 

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.ArgumentCaptor;
 import static org.mockito.Mockito.*;
 
-public class ReadControllerTest {
+class ReadControllerTest {
 
     @Mock
     private HttpSession session;
@@ -40,14 +40,14 @@ public class ReadControllerTest {
     @InjectMocks
     private ReadController readController;
 
-    public static void setField(Object target, String fieldName, Object value) throws Exception {
+    static void setField(Object target, String fieldName, Object value) throws Exception {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         readController = new ReadController();
         setField(readController, "session", session);
@@ -57,7 +57,7 @@ public class ReadControllerTest {
     }
 
     @Test
-    public void testShowMessage() {
+    void testShowMessage() {
         int msgId = 1;
         String expectedMsg = "This is a test message";
 
@@ -84,7 +84,7 @@ public class ReadControllerTest {
         assertEquals("/read_mail/show_message", view);
         System.out.println("===== 테스트 종료 (성공) =====");
     }
-    public void testShowMessage_printActualMessageFromModel() {
+    void testShowMessage_printActualMessageFromModel() {
     int msgId = 1;
     String expectedMsg = "This is a test message";
 
@@ -110,7 +110,7 @@ public class ReadControllerTest {
     
 
     @Test
-    public void testDeleteMailDo_success() {
+    void testDeleteMailDo_success() {
         int msgId = 1;
 
         when(pop3Creator.createPopAgent(session)).thenReturn(pop3Agent);
@@ -123,7 +123,7 @@ public class ReadControllerTest {
     }
 
     @Test
-    public void testDeleteMailDo_failure() {
+    void testDeleteMailDo_failure() {
         int msgId = 1;
 
         when(pop3Creator.createPopAgent(session)).thenReturn(pop3Agent);

@@ -26,6 +26,9 @@
             <form action="${pageContext.request.contextPath}/addrbook/insert" method="POST">
                 <table style="margin: 0 auto;">
                     <tr>
+                        <th colspan="2" style="text-align:center;">사용자 정보 입력</th>
+                    </tr>
+                    <tr>
                         <td>이름</td>
                         <td><input type="text" name="name" size="20" required /></td>
                     </tr>

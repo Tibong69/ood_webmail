@@ -15,14 +15,14 @@ import org.mockito.MockitoAnnotations;
  *
  * @author 박상현
  */
-public class AdminCreatorTest {
+class AdminCreatorTest {
     
     private String server = "";
     private int port = 9997;
     private String cwd = "";
-    private String root_id = "";
-    private String root_pass = "";
-    private String admin_id = ""; 
+    private String rootId = "";
+    private String rootPass = "";
+    private String adminId = ""; 
     
     @Mock
     private ServletContext ctx;
@@ -31,7 +31,7 @@ public class AdminCreatorTest {
     private AdminCreator creator;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         creator = new AdminCreator();
     }
@@ -40,9 +40,9 @@ public class AdminCreatorTest {
      * Test of creatAdminAgent method, of class AdminCreator.
      */
     @Test
-    public void testCreatAdminAgent() {
+    void testCreatAdminAgent() {
         System.out.println("creatAdminAgent");
-        creator.creatAdminAgent(server, port, cwd, root_id, root_pass, admin_id);
+        creator.creatAdminAgent(server, port, cwd, rootId, rootPass, adminId);
     }
     
 }

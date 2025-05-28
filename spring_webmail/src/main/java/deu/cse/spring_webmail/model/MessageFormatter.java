@@ -34,6 +34,7 @@ public class MessageFormatter {
 
     //HTML Tag
     String htmlBR = "<br>";
+    String htmlEndTD = "</td>";
 
     public String getMessageTable(List<MailSummary> mailList) {
         StringBuilder buffer = new StringBuilder();
@@ -42,12 +43,12 @@ public class MessageFormatter {
 
         for (MailSummary mail : mailList) {
             buffer.append("<tr>")
-                  .append("<td>").append(mail.getMessageNumber()).append("</td>")
-                  .append("<td id='sender'>").append(mail.getFrom()).append("</td>")
+                  .append("<td>").append(mail.getMessageNumber()).append(htmlEndTD)
+                  .append("<td id='sender'>").append(mail.getFrom()).append(htmlEndTD)
                   .append("<td id='subject'><a href='show_message?msgid=")
                   .append(mail.getMessageNumber()).append("'>")
                   .append(mail.getSubject()).append("</a></td>")
-                  .append("<td id='date'>").append(mail.getSentDate()).append("</td>")
+                  .append("<td id='date'>").append(mail.getSentDate()).append(htmlEndTD)
                   .append("<td id='delete'><a href='delete_mail.do?msgid=")
                   .append(mail.getMessageNumber())
                   .append("' onclick=\"return confirm('정말 삭제하시겠습니까?')\">삭제</a></td>")
@@ -84,7 +85,7 @@ public class MessageFormatter {
             for (String fileName : attachedFiles) {
                 buffer.append("<a href=download"
                         + "?userid=" + this.userid
-                        + "&filename=" + fileName.replaceAll(" ", "%20")
+                        + "&filename=" + fileName.replace(" ", "%20")
                         + " target=_top> " + fileName + "</a> ");
             }
             buffer.append(htmlBR);

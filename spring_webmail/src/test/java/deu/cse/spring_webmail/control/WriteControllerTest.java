@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class WriteControllerTest {
+class WriteControllerTest {
 
     @InjectMocks
     private WriteController controller;
@@ -33,7 +33,7 @@ public class WriteControllerTest {
     private RedirectAttributes redirectAttributes;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         redirectAttributes = new RedirectAttributesModelMap();
 
@@ -54,7 +54,7 @@ public class WriteControllerTest {
     }
 
     @Test
-    public void testWriteMail() {
+    void testWriteMail() {
         doNothing().when(session).removeAttribute("sender");
 
         String result = controller.writeMail();
@@ -62,7 +62,7 @@ public class WriteControllerTest {
     }
 
     @Test
-    public void testWriteMailDo_WithAttachment() throws Exception {
+    void testWriteMailDo_WithAttachment() throws Exception {
         String to = "recipient@example.com";
         String cc = "cc@example.com";
         String subj = "Test Subject";
@@ -85,7 +85,7 @@ public class WriteControllerTest {
     }
 
     @Test
-    public void testWriteMailDo_WithoutAttachment() throws Exception {
+    void testWriteMailDo_WithoutAttachment() throws Exception {
         String to = "recipient@example.com";
         String cc = "cc@example.com";
         String subj = "No Attachment";

@@ -21,29 +21,36 @@
         </div>
 
         <div id="main">
-            <h2>주소록 추가</h2>
-            <hr/>
-            <form action="${pageContext.request.contextPath}/addrbook/insert" method="POST">
-                <table style="margin: 0 auto;">
-                    <tr>
-                        <td>이름</td>
-                        <td><input type="text" name="name" size="20" required /></td>
-                    </tr>
-                    <tr>
-                        <td>이메일</td>
-                        <td><input type="email" name="email" size="30" required /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:center;">
-                            <input type="submit" value="추가" />
-                            <input type="reset" value="초기화" />
-                        </td>
-                    </tr>
-                </table>
-            </form>
-            <br>
-            <a href="${pageContext.request.contextPath}/addrbook">목록으로</a>
-        </div>
+    <h2>주소록 추가</h2>
+    <hr/>
+    <form action="${pageContext.request.contextPath}/addrbook/insert" method="POST">
+        <table style="margin: 0 auto;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="2" style="text-align:center;">주소록 정보 입력</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>이름</td>
+                    <td><input type="text" name="name" size="20" required /></td>
+                </tr>
+                <tr>
+                    <td>이메일</td>
+                    <td><input type="email" name="email" size="30" required /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;">
+                        <input type="submit" value="추가" />
+                        <input type="reset" value="초기화" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <br>
+    <a href="${pageContext.request.contextPath}/addrbook">목록으로</a>
+</div>
 
         <%@include file="/WEB-INF/views/footer.jspf"%>
     </body>

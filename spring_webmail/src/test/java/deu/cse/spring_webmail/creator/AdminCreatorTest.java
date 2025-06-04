@@ -4,7 +4,9 @@
  */
 package deu.cse.spring_webmail.creator;
 
+import deu.cse.spring_webmail.model.UserAdminAgent;
 import jakarta.servlet.ServletContext;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,7 +44,8 @@ class AdminCreatorTest {
     @Test
     void testCreatAdminAgent() {
         System.out.println("creatAdminAgent");
-        creator.creatAdminAgent(server, port, cwd, rootId, rootPass, adminId);
+        UserAdminAgent adminAgent  = creator.creatAdminAgent(server, port, cwd, rootId, rootPass, adminId);
+        assertNotNull(adminAgent, "useradminagent 객체 생설 실패");
     }
     
 }

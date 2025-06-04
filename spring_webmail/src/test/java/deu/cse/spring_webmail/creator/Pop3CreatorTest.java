@@ -4,7 +4,9 @@
  */
 package deu.cse.spring_webmail.creator;
 
+import deu.cse.spring_webmail.model.Pop3Agent;
 import jakarta.servlet.http.HttpSession;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -39,7 +41,8 @@ class Pop3CreatorTest {
      */
     @Test
     void testCreatePopAgent_3args() {
-        creator.createPopAgent(host, userID, userPW);
+         Pop3Agent pop3agemt = creator.createPopAgent(host, userID, userPW);
+         assertNotNull(pop3agemt, "pop3agent 객체 생성 실패");    
     }
 
     /**
@@ -53,7 +56,8 @@ class Pop3CreatorTest {
         when(session.getAttribute("userid")).thenReturn(userID);
         when(session.getAttribute("passwd")).thenReturn(userPW);
         
-        creator.createPopAgent(session);
+        Pop3Agent pop3agemt = creator.createPopAgent(session);
+        assertNotNull(pop3agemt, "pop3agent 객체 생성 실패");    
     }
     
 }

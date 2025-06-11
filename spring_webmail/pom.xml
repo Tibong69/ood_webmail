@@ -109,7 +109,12 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.4.0</version>
         </dependency>
-        
+        <!--Selenium 추가-->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.20.0</version> 
+        </dependency>
     </dependencies>
 
     <build>

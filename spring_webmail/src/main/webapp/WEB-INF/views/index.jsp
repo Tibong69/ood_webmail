@@ -27,8 +27,6 @@
                 <input type="reset" value="다시 입력" name="B2">
             </form>
         </div>
-
-
         <%@include file="footer.jspf"%>
     </body>
 </html>
